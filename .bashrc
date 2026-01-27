@@ -40,4 +40,14 @@ alias z='fd --type f --hidden --exclude .git | fzf-tmux -p --reverse | xargs nvi
 alias gg='lazygit'
 alias zz='du -sh'
 
+zd() {
+  local dir
+  dir=$(find "$HOME/Projects/" -mindepth 1 -maxdepth 1 -type d 2>/dev/null \
+        | fzf-tmux -p --reverse)
+
+  if [[ -n "$dir" ]]; then
+    cd "$dir" || return
+  fi
+}
+
 # eval "$(starship init bash)"

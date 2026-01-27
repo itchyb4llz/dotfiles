@@ -282,7 +282,7 @@ bindsym XF86MonBrightnessDown exec changebrightness down
 
 # application rules
 assign [class="firefox"] → 2
-assign [class="Google-chrome"] → 2
+assign [class="Brave-browser"] → 2
 assign [class="qutebrowser"] → 2
 assign [class="discord"] → 6
 

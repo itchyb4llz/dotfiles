@@ -16,8 +16,8 @@ order += "volume master"
 order += "cpu_usage"
 order += "memory"
 order += "disk /"
-# order += "battery all"
-# order += "tztime local"
+order += "battery all"
+order += "tztime local"
 
 cpu_usage {
   format= "CPU %usage"
@@ -48,7 +48,7 @@ ethernet _first_ {
 #}
 
 battery all {
-  path=/sys/class/power_supply/%d/uevent
+  path=/sys/class/power_supply/BAT%d/uevent
   format = "%status %percentage"
   last_full_capacity = true
   threshold_type=percentage

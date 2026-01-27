@@ -20,19 +20,24 @@ set -g theme_display_user yes
 set -g theme_hide_hostname no
 set -g theme_hostname always
 
+set -g fish_cursor_default block
+set -g fish_cursor_insert block
+set -g fish_cursor_replace block
+set -g fish_cursor_visual block
+
 function fish_user_key_bindings
     fish_vi_key_bindings
 end
 
 function zd
-    set -l dir (find ~/Developments/ -mindepth 2 -maxdepth 2 -type d -print 2> /dev/null | fzf-tmux -p --reverse)
+    set -l dir (find ~/Projects/ -mindepth 1 -maxdepth 1 -type d -print 2> /dev/null | fzf-tmux -p --reverse)
     if test -n "$dir"
         cd "$dir"
     end
 end
 
 function til
-    set -l selection (find ~/til/ -mindepth 1 -maxdepth 2 \( -type d -o -type f \) -print 2> /dev/null | fzf-tmux -p --reverse)
+    set -l selection (find ~/Documents/til/ -mindepth 1 -maxdepth 2 \( -type d -o -type f \) -print 2> /dev/null | fzf-tmux -p --reverse)
     if test -n "$selection"
         nvim "$selection"
     end
