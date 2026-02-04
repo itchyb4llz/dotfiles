@@ -51,6 +51,10 @@ alt + shift + l
 super + Return
 	alacritty
 
+# emacs
+super + shift + Return
+	emacs
+
 # dmenu
 super + @space
   dmenu_run -i -nb '#1a1b26' -nf '#a9b1d6' -sb '#7aa2f7' -sf '#1a1b26' -fn 'Agave Nerd Font-12'
