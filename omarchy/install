@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# install the packages that I need, please check before execute
+
+echo -e "\nInstalling..."
+sudo pacman -S emacs --noconfirm --overwrite '*'
+sudo pacman -S fish tmux emacs ttf-agave-nerd --noconfirm
+
+git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+git clone https://github.com/itchyb4llz/doom-emacs ~/.config/doom
+# do this later: ~/.config/emacs/bin/doom install
+
