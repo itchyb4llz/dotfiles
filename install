@@ -3,42 +3,42 @@
 read -p "Do you want to install PARU the better AUR Helper? [Y/n] " yn
 case $yn in
 [Yy]*)
-	git clone https://aur.archlinux.org/paru.git $HOME/.paru
-	cd $HOME/.paru
-	makepkg -si --noconfirm
-	;;
+  git clone https://aur.archlinux.org/paru.git $HOME/.paru
+  cd $HOME/.paru
+  makepkg -si --noconfirm
+  ;;
 [Nn]*) ;;
 "")
-	git clone https://aur.archlinux.org/paru.git $HOME/.paru
-	cd $HOME/.paru
-	makepkg -si --noconfirm
-	;;
+  git clone https://aur.archlinux.org/paru.git $HOME/.paru
+  cd $HOME/.paru
+  makepkg -si --noconfirm
+  ;;
 *) echo "Please answer y/n TRY AGAIN!" ;;
 esac
 
 read -p "Do you want to install NEOVIM? [Y/n] " yn
 case $yn in
 [Yy]*)
-	sudo pacman -S neovim nodejs python-pip
-	curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-	curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
-	yarn global add neovim
-	paru -S npm neovim-colorbuddy-git instant-markdown-d nvim-packer-git
-	sudo npm i -g typescript typescript-language-server
-	python3 -m pip install --user --upgrade pynvim
-	cd
-	;;
+  sudo pacman -S neovim nodejs python-pip
+  curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
+  yarn global add neovim
+  paru -S npm neovim-colorbuddy-git instant-markdown-d nvim-packer-git
+  sudo npm i -g typescript typescript-language-server
+  python3 -m pip install --user --upgrade pynvim
+  cd
+  ;;
 [Nn]*) ;;
 "")
-	sudo pacman -S neovim nodejs python-pip
-	curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-	curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
-	yarn global add neovim
-	paru -S npm neovim-colorbuddy-git instant-markdown-d nvim-packer-git
-	sudo npm i -g typescript typescript-language-server
-	python3 -m pip install --user --upgrade pynvim
-	cd
-	;;
+  sudo pacman -S neovim nodejs python-pip
+  curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
+  yarn global add neovim
+  paru -S npm neovim-colorbuddy-git instant-markdown-d nvim-packer-git
+  sudo npm i -g typescript typescript-language-server
+  python3 -m pip install --user --upgrade pynvim
+  cd
+  ;;
 *) echo "Please answer y/n TRY AGAIN!" ;;
 esac
 
@@ -47,7 +47,7 @@ printf "\e[1;32m## Installing GTK, ICONS, CURSOR, ETC. ##\e[0m\n"
 printf "\e[1;32m#########################################\e[0m\n"
 
 paru -S python-iwlib sardi-icons spotify xidlehook papirus-icon-theme
-paru -S --aur preload picom-git light devour simple-mtpfs networkmanager-dmenu-git
+paru -S --aur preload picom light devour simple-mtpfs networkmanager-dmenu-git
 
 printf "\e[1;32m######################\e[0m\n"
 printf "\e[1;32m## Installing FONTS ##\e[0m\n"
@@ -65,7 +65,7 @@ printf "\e[1;32m#############################\e[0m\n"
 printf "\e[1;32m## Installing DEPENDENCIES ##\e[0m\n"
 printf "\e[1;32m#############################\e[0m\n"
 
-sudo pacman -S tlp tlp-rdw ufw qutebrowser rofi lxappearance udisks2 pcmanfm scrot nitrogen lxsession volumeicon xcb-util-cursor exa sxiv mpv pavucontrol plocate dunst pamixer alacritty blueberry trayer fish brightnessctl blueman stow zathura zathura-pdf-poppler vimb gnome-keyring emacs dmenu xdo xdotool fisher ripgrep tmux aria2 gparted network-manager-applet networkmanager polybar prettier python-pywal xclip fd firefox discord sxhkd trash-cli flameshot i3 i3-wm qtile bspwm rofi-emoji rofi-calc
+sudo pacman -S tlp tlp-rdw ufw qutebrowser rofi lxappearance udisks2 pcmanfm scrot lxsession volumeicon xcb-util-cursor exa sxiv mpv pavucontrol plocate dunst pamixer alacritty fish brightnessctl blueman stow zathura zathura-pdf-poppler vimb gnome-keyring emacs dmenu xdo xdotool fisher ripgrep tmux aria2 gparted network-manager-applet networkmanager polybar prettier python-pywal xclip fd firefox discord sxhkd trash-cli flameshot i3 i3-wm qtile bspwm rofi-emoji rofi-calc
 sh -c "$(curl -fsSL https://starship.rs/install.sh)"
 
 pip3 install psutil
@@ -80,14 +80,14 @@ sudo systemctl enable preload.service
 # sudo systemctl enable nvidia-suspend.service
 
 while true; do
-	read -p "Do you want to reboot? (recommended) [Y/n] " yn
-	case $yn in
-	[Yy]*) reboot ;;
-	[Nn]*)
-		exit
-		break
-		;;
-	"") reboot ;;
-	*) printf "\e[1;32mPlease answer y or n.\e[0m\n" ;;
-	esac
+  read -p "Do you want to reboot? (recommended) [Y/n] " yn
+  case $yn in
+  [Yy]*) reboot ;;
+  [Nn]*)
+    exit
+    break
+    ;;
+  "") reboot ;;
+  *) printf "\e[1;32mPlease answer y or n.\e[0m\n" ;;
+  esac
 done

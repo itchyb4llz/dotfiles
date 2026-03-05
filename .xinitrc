@@ -18,7 +18,7 @@ else
 fi
 
 # dual screen enable
-xrandr --output DP2 --primary --mode 1920x1080 --pos 0x0 --output HDMI1 --mode 1920x1080 --left-of DP2
+xrandr --output eDP1 --primary --mode 1920x1200 --pos 0x0 --output HDMI1 --mode 1600x900 --left-of eDP1
 
 # disbable screen off
 if command -v xset >/dev/null; then
