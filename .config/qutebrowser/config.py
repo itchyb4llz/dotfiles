@@ -35,6 +35,6 @@ c.fonts.completion.entry = '9pt "JetBrains Mono Nerd Font"'
 c.fonts.debug_console = '9pt "JetBrains Mono Nerd Font"'
 c.fonts.prompts = 'default_size sans-serif'
 c.fonts.statusbar = '9pt "JetBrains Mono Nerd Font"'
-c.zoom.default = '80'
+# c.zoom.default = '80'
 
 config.bind('xx', 'config-cycle statusbar.show always never;; config-cycle tabs.show always never')
