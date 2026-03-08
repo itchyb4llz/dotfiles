@@ -4,7 +4,7 @@ super + Escape
 
 # file manager
 super + e
-  pcmanfm
+  alacritty -e yazi
 
 # powermenu
 super + x
@@ -49,7 +49,7 @@ alt + shift + l
 
 # terminal emulator
 super + Return
-	alacritty
+	ghostty
 
 # emacs
 super + shift + Return
