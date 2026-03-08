@@ -1,0 +1,10 @@
+theme = Gruvbox Dark
+font-family = Agave Nerd Font
+font-size = 10.5
+
+# background-opacity = 0.95
+gtk-titlebar = false
+
+shell-integration-features = no-cursor
+cursor-style = block
+app-notifications = false
