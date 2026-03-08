@@ -36,14 +36,14 @@ alias gd='git diff'
 alias youtube-dl-music='youtube-dl --extract-audio --audio-format mp3'
 alias checkupdates='checkupdates | less'
 # alias dev='tmux new-session \; split-window -v -l 30% \; split-window -h'
-alias z='fd --type f --hidden --exclude .git | fzf-tmux -p --reverse | xargs nvim'
+alias z='yazi'
 alias gg='lazygit'
 alias zz='du -sh'
 
 zd() {
   local dir
-  dir=$(find "$HOME/Projects/" -mindepth 1 -maxdepth 1 -type d 2>/dev/null \
-        | fzf-tmux -p --reverse)
+  dir=$(find "$HOME/Projects/" -mindepth 1 -maxdepth 1 -type d 2>/dev/null |
+    fzf-tmux -p --reverse)
 
   if [[ -n "$dir" ]]; then
     cd "$dir" || return

@@ -70,7 +70,7 @@ alias . 'tmux new-session -s 1'
 # alias how-old-am-i "sudo dumpe2fs $(mount | grep 'on \/ ' | awk '{print $1}') | grep 'Filesystem created:'"
 # alias xampp-start 'sudo xampp startapache; sudo xampp startmysql'
 # alias dev 'tmux new-session \; split-window -v -l 30% \; split-window -h'
-alias z 'fd --type f --hidden --exclude .git | fzf-tmux -p --reverse | xargs nvim'
+alias z yazi
 alias gg lazygit
 alias zz 'du -sh'
 alias doominstall '~/.config/emacs/bin/doom install'
