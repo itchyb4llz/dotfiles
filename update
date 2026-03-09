@@ -14,6 +14,7 @@ cp -rf ~/.config/fish/config.fish ~/.dotfiles/.config/fish/
 cp -rf ~/.config/ghostty ~/.dotfiles/.config/
 cp -rf ~/.config/i3/ ~/.dotfiles/.config/
 cp -rf ~/.config/i3status/ ~/.dotfiles/.config/
+cp -rf ~/.config/kitty/ ~/.dotfiles/.config/
 cp -rf ~/.config/lazygit/ ~/.dotfiles/.config/
 cp -rf ~/.config/mpv/ ~/.dotfiles/.config/
 cp -rf ~/.config/picom/ ~/.dotfiles/.config/

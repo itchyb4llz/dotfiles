@@ -8,3 +8,4 @@ gtk-titlebar = false
 shell-integration-features = no-cursor
 cursor-style = block
 app-notifications = false
+clipboard-paste-protection = false

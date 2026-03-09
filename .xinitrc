@@ -18,7 +18,7 @@ else
 fi
 
 # dual screen enable
-xrandr --output eDP1 --primary --mode 1920x1200 --pos 0x0 --output HDMI1 --mode 1600x900 --left-of eDP1
+xrandr --output eDP1 --primary --mode 1920x1200 --pos 0x0 --output HDMI1 --auto --left-of eDP1
 
 # disbable screen off
 if command -v xset >/dev/null; then
@@ -28,7 +28,7 @@ if command -v xset >/dev/null; then
 fi
 
 # duplicate screen
-# xrandr --output "$extern" --same-as "$intern"
+# xrandr --output "$intern" --same-as "$extern"
 
 export XCURSOR_THEME=Bibata-Modern-Ice
 export XCURSOR_SIZE=16
