@@ -30,7 +30,14 @@ function fish_user_key_bindings
 end
 
 function zd
-    set -l dir (find ~/Projects/ -mindepth 1 -maxdepth 1 -type d -print 2> /dev/null | fzf-tmux -p --reverse)
+    set -l dir (find ~/projects/ -mindepth 1 -maxdepth 1 -type d -print 2> /dev/null | fzf-tmux -p --reverse)
+    if test -n "$dir"
+        cd "$dir"
+    end
+end
+
+function dump
+    set -l dir (find ~/files/work/_dumps -mindepth 1 -maxdepth 1 -type d -print 2> /dev/null | fzf-tmux -p --reverse)
     if test -n "$dir"
         cd "$dir"
     end
