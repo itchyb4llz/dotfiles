@@ -27,6 +27,7 @@ cp -rf ~/.config/qutebrowser/config.py ~/.dotfiles/.config/qutebrowser/
 cp -rf ~/.config/redshift/redshift.conf ~/.dotfiles/.config/redshift/
 cp -rf ~/.config/rofi/ ~/.dotfiles/.config/
 cp -rf ~/.config/sxhkd/ ~/.dotfiles/.config/
+cp -rf ~/.config/tmux/tmux.conf ~/.dotfiles/.config/tmux/
 cp -rf ~/.config/vimb/ ~/.dotfiles/.config/
 cp -rf ~/.config/starship.toml ~/.dotfiles/.config/
 
