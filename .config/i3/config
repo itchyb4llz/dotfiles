@@ -301,5 +301,7 @@ for_window [class="Spotify"] move to workspace 7
 # exec --no-startup-id xautolock -corners -000 -time 10 -locker 'i3lock -c 000000' &
 bindsym Pause exec i3lock -c 000000 && systemctl suspend
 
+# dual screen
+bindsym $mod+p exec xrandr --output eDP1 --primary --mode 1920x1200 --pos 0x0 --output HDMI1 --auto --left-of eDP1 && xwallpaper --stretch ~/.dotfiles/wall.jpg
 
 # sudo timedatectl set-ntp true
