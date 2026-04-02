@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# make sure you have the right access to transfer files in your nextcloud
+rclone bisync files/ nc:files --no-check-certificate --progress --resync
