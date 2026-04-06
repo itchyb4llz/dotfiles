@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# make sure you have the right access to transfer files in your nextcloud
+rclone bisync ~/files/work/_dumps/dalawinonfarmers/zip nc:dumpz/zip-df --no-check-certificate --progress --resync
+rclone bisync ~/files/work/_dumps/kimlyn/zip nc:dumpz/zip-kimlyn --no-check-certificate --progress --resync
