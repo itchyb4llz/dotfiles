@@ -51,9 +51,9 @@ function til
 end
 
 # aliases
-alias ls 'exa -l --color=always --group-directories-first --icons'
-alias la 'exa -aG --color=always --group-directories-first --icons'
-alias ll 'exa -al --color=always --group-directories-first --icons'
+alias ls 'eza -l --color=always --group-directories-first --icons'
+alias la 'eza -aG --color=always --group-directories-first --icons'
+alias ll 'eza -al --color=always --group-directories-first --icons'
 alias vim nvim
 # alias vim lvim
 alias em '/usr/bin/emacs -nw'
