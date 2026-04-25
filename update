@@ -2,9 +2,6 @@
 
 cp -rf ~/.local/bin/* ~/.dotfiles/.local/bin/
 cp -rf ~/.bashrc ~/.dotfiles/
-cp -rf ~/.tmux.conf ~/.dotfiles/
-cp -rf ~/.tmux.powerline.conf ~/.dotfiles/
-cp -rf ~/.tmux.statusline.conf ~/.dotfiles/
 cp -rf ~/.xinitrc ~/.dotfiles/
 
 cp -rf ~/.config/alacritty/ ~/.dotfiles/.config/

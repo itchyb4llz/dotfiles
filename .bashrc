@@ -23,6 +23,3 @@ if [ -d ~/.bashrc.d ]; then
     done
 fi
 unset rc
-
-alias vim='nvim'
-. "$HOME/.cargo/env"

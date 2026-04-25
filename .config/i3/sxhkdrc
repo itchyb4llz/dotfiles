@@ -4,7 +4,7 @@ super + Escape
 
 # file manager
 super + e
-  kitty -e yazi
+  pcmanfm
 
 # powermenu
 super + x
@@ -63,10 +63,10 @@ super + shift + b
   dm-search
 
 # multimedia keys
-super + Up
+super + m
 	$HOME/.local/bin/changevolume up
 
-super + Down
+super + n
 	$HOME/.local/bin/changevolume down
 
 super + Right
