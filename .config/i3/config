@@ -44,7 +44,8 @@ bindsym $mod+Return exec /usr/bin/alacritty
 # bindsym $mod+Return exec i3-sensible-terminal
 
 #tab between workspaces
-bindsym $mod+Shift+Tab workspace next
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
 bindsym $mod+Control+Shift+Tab workspace prev
 
 # kill focused window
