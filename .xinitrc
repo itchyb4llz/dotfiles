@@ -8,18 +8,6 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
   unset f
 fi
 
-intern=eDP-1
-extern=HDMI-1
-
-if xrandr | grep "$extern disconnected"; then
-  xrandr --output "$extern" --off --output "$intern" --auto
-else
-  xrandr --output "$intern" --off --output "$extern" --auto
-fi
-
-# dual screen enable
-xrandr --output eDP1 --primary --mode 1920x1200 --pos 0x0 --output HDMI1 --auto --left-of eDP1
-
 # disbable screen off
 if command -v xset >/dev/null; then
   xset s off
@@ -32,6 +20,18 @@ fi
 
 export XCURSOR_THEME=Bibata-Modern-Ice
 export XCURSOR_SIZE=16
+
+OUT="HDMI1"
+
+MODE_LINE=$(xrandr | awk -v out="$OUT" '
+  $1==out {found=1}
+  found && /^[[:space:]]*[0-9]+x[0-9]+/ {print; exit}
+')
+
+BEST_RATE=$(echo "$MODE_LINE" | grep -oE '[0-9]+\.[0-9]+' | sort -nr | head -1)
+RES=$(echo "$MODE_LINE" | awk '{print $1}')
+
+xrandr --output "$OUT" --mode "$RES" --rate "$BEST_RATE"
 
 # only choose 1 window manager
 # exec qtile start
