@@ -1,0 +1,464 @@
+#!/usr/bin/bash
+set -e
+
+# ─────────────────────────────────────────────
+#  Colors
+# ─────────────────────────────────────────────
+BOLD="\033[1m"
+DIM="\033[2m"
+CYAN="\033[36m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+RED="\033[31m"
+RESET="\033[0m"
+
+log() { echo -e "  ${CYAN}  >>>${RESET} $*"; }
+success() { echo -e "  ${GREEN}  [ok]${RESET} $*"; }
+warn() { echo -e "  ${YELLOW}  [!]${RESET}  $*"; }
+error() {
+  echo -e "  ${RED}  [x]${RESET}  $*"
+  exit 1
+}
+divider() { echo -e "  ${DIM}  - - - - - - - - - - - - - - - - - - -${RESET}"; }
+
+# ─────────────────────────────────────────────
+#  Check dependencies
+# ─────────────────────────────────────────────
+command -v node >/dev/null 2>&1 || error "node not found  ->  https://nodejs.org"
+command -v pnpm >/dev/null 2>&1 || error "pnpm not found  ->  npm install -g pnpm"
+command -v git >/dev/null 2>&1 || error "git not found"
+
+# ─────────────────────────────────────────────
+#  Banner
+# ─────────────────────────────────────────────
+clear
+echo ""
+echo -e "${CYAN}${BOLD}"
+echo "       __        _ _          _   __            "
+echo "      / /___ _  (_| )_____   / | / /__ _      __"
+echo " __  / / __ \`/ / /|// ___/  /  |/ / _ \ | /| / /"
+echo "/ /_/ / /_/ / / /  (__  )  / /|  /  __/ |/ |/ / "
+echo "\____/\__,_/_/ /  /____/  /_/ |_/\___/|__/|__/  "
+echo "          /___/                                  "
+echo ""
+echo "    ____               _           __  "
+echo "   / __ \_________    (_)__  _____/ /_ "
+echo "  / /_/ / ___/ __ \  / / _ \/ ___/ __/ "
+echo " / ____/ /  / /_/ / / /  __/ /__/ /_   "
+echo "/_/   /_/   \____/_/ /\___/\___/\__/   "
+echo "                /___/                  "
+echo -e "${RESET}"
+echo -e "  ${DIM}  by jaj  //  next.js + drizzle + trpc${RESET}"
+VERSION="1.0.0"
+DATE=$(date +"%Y-%m-%d")
+echo -e "  ${DIM}  v${VERSION}  //  ${DATE}${RESET}"
+echo ""
+
+# ─────────────────────────────────────────────
+#  Paths
+# ─────────────────────────────────────────────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+
+# ─────────────────────────────────────────────
+#  Project name
+# ─────────────────────────────────────────────
+divider
+echo ""
+
+while true; do
+  read -rp "  project name: " PROJECT_NAME
+  PROJECT_NAME=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+  if [[ -z "$PROJECT_NAME" ]]; then
+    warn "name cannot be empty."
+  elif [[ -d "$PARENT_DIR/$PROJECT_NAME" ]]; then
+    warn "'$PARENT_DIR/$PROJECT_NAME' already exists. pick another name."
+  else
+    break
+  fi
+done
+
+PROJECT_PATH="$PARENT_DIR/$PROJECT_NAME"
+
+echo ""
+divider
+echo ""
+
+# ─────────────────────────────────────────────
+#  Next.js
+# ─────────────────────────────────────────────
+log "installing next.js (answer the prompts below)"
+echo ""
+
+pnpm create next-app@latest "$PROJECT_PATH"
+
+echo ""
+divider
+echo ""
+
+# ─────────────────────────────────────────────
+#  Database driver (use 1 recommended)
+# ─────────────────────────────────────────────
+echo -e "  database driver:"
+echo -e "    1)  PostgreSQL  (pg)"
+echo -e "    2)  MySQL       (mysql2)"
+echo -e "    3)  SQLite      (better-sqlite3)"
+echo ""
+read -rp "  choose [1/2/3] (default: 1): " DB_CHOICE
+DB_CHOICE="${DB_CHOICE:-1}"
+
+case "$DB_CHOICE" in
+2)
+  DB_DRIVER="mysql2"
+  DB_DIALECT="mysql"
+  DB_LABEL="mysql"
+  ;;
+3)
+  DB_DRIVER="better-sqlite3"
+  DB_DIALECT="sqlite"
+  DB_LABEL="sqlite"
+  ;;
+*)
+  DB_DRIVER="pg"
+  DB_DIALECT="postgresql"
+  DB_LABEL="postgresql"
+  ;;
+esac
+
+echo ""
+
+# ─────────────────────────────────────────────
+#  Install Drizzle
+# ─────────────────────────────────────────────
+cd "$PROJECT_PATH"
+
+log "installing drizzle-orm + drizzle-kit + $DB_LABEL..."
+pnpm add drizzle-orm dotenv "$DB_DRIVER" >/dev/null 2>&1
+pnpm add -D drizzle-kit tsx @types/pg >/dev/null 2>&1 # <---- remove @types/pg when not using postgres
+success "drizzle-orm  drizzle-kit  dotenv  tsx  $DB_LABEL"
+
+# ─────────────────────────────────────────────
+#  Add more tools below -- just uncomment
+# ─────────────────────────────────────────────
+
+log "installing zod..."
+pnpm add zod >/dev/null 2>&1
+success "zod"
+
+log "installing zustand..."
+pnpm add zustand >/dev/null 2>&1
+success "zustand"
+
+log "installing trpc..."
+pnpm add @trpc/next @trpc/server @trpc/client @trpc/react-query @tanstack/react-query >/dev/null 2>&1
+success "trpc"
+
+log "installing shadcn/ui..."
+echo ""
+pnpm dlx shadcn@latest init
+echo ""
+success "shadcn/ui"
+
+# ─────────────────────────────────────────────
+#  Detect TypeScript
+# ─────────────────────────────────────────────
+[[ -f "$PROJECT_PATH/tsconfig.json" ]] && IS_TS=true || IS_TS=false
+$IS_TS && EXT="ts" || EXT="js"
+[[ -d "$PROJECT_PATH/src" ]] && ROOT="$PROJECT_PATH/src" || ROOT="$PROJECT_PATH"
+
+# ─────────────────────────────────────────────
+#  Folder structure
+#
+#  root/
+#  ├── drizzle.config.ts
+#  ├── hooks/
+#  │   └── trpc.ts
+#  ├── providers/
+#  │   └── trpc.tsx
+#  └── server/
+#      ├── trpc.ts
+#      ├── routers/
+#      │   ├── _app.ts
+#      │   └── example.ts
+#      └── drizzle/
+#          ├── index.ts
+#          ├── migrations/
+#          └── schema/
+#              ├── index.ts
+#              └── user.ts
+# ─────────────────────────────────────────────
+DRIZZLE_DIR="$PROJECT_PATH/server/drizzle"
+SCHEMA_DIR="$DRIZZLE_DIR/schema"
+MIGRATIONS_DIR="$DRIZZLE_DIR/migrations"
+ROUTERS_DIR="$PROJECT_PATH/server/routers"
+HOOKS_DIR="$ROOT/hooks"
+PROVIDERS_DIR="$ROOT/providers"
+API_TRPC_DIR="$ROOT/app/api/trpc/[trpc]"
+
+mkdir -p "$SCHEMA_DIR" "$MIGRATIONS_DIR" "$ROUTERS_DIR" "$HOOKS_DIR" "$PROVIDERS_DIR" "$API_TRPC_DIR"
+
+# ─────────────────────────────────────────────
+#  drizzle.config
+# ─────────────────────────────────────────────
+log "writing drizzle.config.${EXT}..."
+
+if $IS_TS; then
+  cat >"$PROJECT_PATH/drizzle.config.ts" <<EOF
+import 'dotenv/config'
+import { defineConfig } from 'drizzle-kit'
+
+export default defineConfig({
+  out: './server/drizzle/migrations',
+  schema: './server/drizzle/schema',
+  dialect: '${DB_DIALECT}',
+  dbCredentials: {
+    url: process.env.DATABASE_URL as string,
+  },
+  verbose: true,
+  strict: true,
+})
+EOF
+else
+  cat >"$PROJECT_PATH/drizzle.config.js" <<EOF
+require('dotenv/config')
+
+/** @type {import('drizzle-kit').Config} */
+module.exports = {
+  out: './server/drizzle/migrations',
+  schema: './server/drizzle/schema',
+  dialect: '${DB_DIALECT}',
+  dbCredentials: {
+    url: process.env.DATABASE_URL,
+  },
+  verbose: true,
+  strict: true,
+}
+EOF
+fi
+
+success "drizzle.config.${EXT}"
+
+# ─────────────────────────────────────────────
+#  server/drizzle/index
+# ─────────────────────────────────────────────
+log "writing server/drizzle/index.${EXT}..."
+
+cat >"$DRIZZLE_DIR/index.ts" <<'EOF'
+import { drizzle } from 'drizzle-orm/node-postgres'
+import { Pool } from 'pg'
+import * as schema from './schema'
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+})
+
+export const db = drizzle(pool, { schema })
+EOF
+
+success "server/drizzle/index.${EXT}"
+
+# ─────────────────────────────────────────────
+#  server/drizzle/schema/user
+# ─────────────────────────────────────────────
+log "writing schema/user.${EXT}..."
+
+cat >"$SCHEMA_DIR/user.ts" <<'EOF'
+import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+EOF
+
+success "schema/user.${EXT}"
+
+# ─────────────────────────────────────────────
+#  server/drizzle/schema/index (barrel)
+# ─────────────────────────────────────────────
+log "writing schema/index.${EXT} (barrel)..."
+
+cat >"$SCHEMA_DIR/index.ts" <<'EOF'
+export * from './user'
+EOF
+
+success "schema/index.${EXT}"
+
+# ─────────────────────────────────────────────
+#  server/trpc
+# ─────────────────────────────────────────────
+log "writing server/trpc.${EXT}..."
+
+cat >"$PROJECT_PATH/server/trpc.ts" <<'EOF'
+import { initTRPC } from '@trpc/server'
+import { ZodError } from 'zod'
+ 
+export const t = initTRPC.create({
+  errorFormatter({ shape, error }) {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        zodError:
+          error.code === 'BAD_REQUEST' && error.cause instanceof ZodError
+            ? error
+            : null,
+      },
+    }
+  },
+})
+
+export const router          = t.router
+export const publicProcedure = t.procedure
+EOF
+
+success "server/trpc.${EXT}"
+
+# ─────────────────────────────────────────────
+#  server/routers/example
+# ─────────────────────────────────────────────
+log "writing server/routers/example.${EXT}..."
+
+cat >"$ROUTERS_DIR/example.ts" <<'EOF'
+import { z } from 'zod'
+import { router, publicProcedure } from '../trpc'
+
+export const exampleRouter = router({
+  hello: publicProcedure
+    .input(z.object({ name: z.string().optional() }))
+    .query(({ input }) => {
+      return { message: `hello ${input.name ?? 'world'}` }
+    }),
+})
+EOF
+
+success "server/routers/example.${EXT}"
+
+# ─────────────────────────────────────────────
+#  server/routers/_app
+# ─────────────────────────────────────────────
+log "writing server/routers/_app.${EXT}..."
+
+cat >"$ROUTERS_DIR/_app.ts" <<'EOF'
+import { router } from '../trpc'
+import { exampleRouter } from './example'
+
+export const appRouter = router({
+  example: exampleRouter,
+})
+
+export type AppRouter = typeof appRouter
+EOF
+
+success "server/routers/_app.${EXT}"
+
+# ─────────────────────────────────────────────
+#  hooks/trpc
+# ─────────────────────────────────────────────
+log "writing hooks/trpc.${EXT}..."
+
+cat >"$HOOKS_DIR/trpc.ts" <<'EOF'
+'use client'
+import { createTRPCReact } from '@trpc/react-query'
+import type { AppRouter } from '@/server/routers/_app'
+
+export const trpc = createTRPCReact<AppRouter>()
+EOF
+
+success "hooks/trpc.${EXT}"
+
+# ─────────────────────────────────────────────
+#  providers/trpc
+# ─────────────────────────────────────────────
+log "writing providers/trpc.tsx..."
+
+cat >"$PROVIDERS_DIR/trpc.tsx" <<'EOF'
+'use client'
+import { httpBatchLink } from '@trpc/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import React, { useState } from 'react'
+import { trpc } from '@/hooks/trpc'
+
+export function TrpcProvider({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient())
+  const [trpcClient] = useState(() =>
+    trpc.createClient({
+      links: [
+        httpBatchLink({
+          url: '/api/trpc',
+        }),
+      ],
+    })
+  )
+ 
+  return (
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </trpc.Provider>
+  )
+}
+EOF
+
+success "providers/trpc.tsx"
+
+# ─────────────────────────────────────────────
+#  app/api/trpc/[trpc]/route
+# ─────────────────────────────────────────────
+log "writing app/api/trpc/[trpc]/route.${EXT}..."
+
+cat >"$API_TRPC_DIR/route.ts" <<'EOF'
+import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
+import { appRouter } from '@/server/routers/_app'
+
+const handler = (req: Request) => {
+  return fetchRequestHandler({
+    endpoint: '/api/trpc',
+    req,
+    router: appRouter,
+    createContext: () => ({}),
+  })
+}
+
+export { handler as GET, handler as POST }
+EOF
+
+success "app/api/trpc/[trpc]/route.${EXT}"
+
+# ─────────────────────────────────────────────
+#  .env
+# ─────────────────────────────────────────────
+if [[ ! -f "$PROJECT_PATH/.env" ]]; then
+  cat >"$PROJECT_PATH/.env" <<EOF
+# development
+DATABASE_URL=postgres://user:password@localhost:5432/database
+EOF
+  success ".env"
+fi
+
+# ─────────────────────────────────────────────
+#  Self-cleanup
+# ─────────────────────────────────────────────
+echo ""
+divider
+echo ""
+log "cleaning up scaffolder..."
+rm -rf "$SCRIPT_DIR"
+success "gone"
+
+# ─────────────────────────────────────────────
+#  Done
+# ─────────────────────────────────────────────
+echo ""
+divider
+echo ""
+echo -e "  ${GREEN}${BOLD}all done, jaj.${RESET}"
+echo ""
+echo -e "  ${CYAN}  cd $PROJECT_NAME${RESET}"
+echo -e "  ${DIM}  set DATABASE_URL in .env${RESET}"
+echo -e "  ${DIM}  wrap your layout with <TrpcProvider> from @/providers/trpc${RESET}"
+echo -e "  ${CYAN}  pnpm dev${RESET}"
+echo ""
+divider
+echo ""
