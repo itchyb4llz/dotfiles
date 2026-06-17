@@ -58,7 +58,8 @@ echo ""
 #  Paths
 # ─────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+PARENT_DIR="$HOME/Projects"
+mkdir -p "$PARENT_DIR"
 
 # ─────────────────────────────────────────────
 #  Project name
@@ -436,16 +437,6 @@ DATABASE_URL=postgres://user:password@localhost:5432/database
 EOF
   success ".env"
 fi
-
-# ─────────────────────────────────────────────
-#  Self-cleanup
-# ─────────────────────────────────────────────
-echo ""
-divider
-echo ""
-log "cleaning up scaffolder..."
-rm -rf "$SCRIPT_DIR"
-success "gone"
 
 # ─────────────────────────────────────────────
 #  Done
