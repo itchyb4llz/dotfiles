@@ -49,7 +49,7 @@ echo "/_/   /_/   \____/_/ /\___/\___/\__/   "
 echo "                /___/                  "
 echo -e "${RESET}"
 echo -e "  ${DIM}  by jaj  //  next.js + drizzle + trpc${RESET}"
-VERSION="1.0.0"
+VERSION="1.1.0"
 DATE=$(date +"%Y-%m-%d")
 echo -e "  ${DIM}  v${VERSION}  //  ${DATE}${RESET}"
 echo ""
@@ -60,6 +60,48 @@ echo ""
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PARENT_DIR="$HOME/Projects"
 mkdir -p "$PARENT_DIR"
+
+# ─────────────────────────────────────────────
+#  Config
+# ─────────────────────────────────────────────
+install_with_approval() {
+  set +e
+  pnpm install
+  STATUS=$?
+  set -e
+
+  while [ "$STATUS" -ne 0 ]; do
+    echo ""
+    warn "Build scripts require approval."
+    echo ""
+
+    pnpm approve-builds
+
+    set +e
+    pnpm install
+    STATUS=$?
+    set -e
+  done
+}
+
+run_pnpm() {
+    while true; do
+        set +e
+        "$@"
+        STATUS=$?
+        set -e
+
+        if [ "$STATUS" -eq 0 ]; then
+            return 0
+        fi
+
+        echo ""
+        warn "Build scripts require approval."
+        echo ""
+
+        pnpm approve-builds
+    done
+}
 
 # ─────────────────────────────────────────────
 #  Project name
@@ -91,7 +133,12 @@ echo ""
 log "installing next.js (answer the prompts below)"
 echo ""
 
-pnpm create next-app@latest "$PROJECT_PATH"
+pnpm create next-app@latest "$PROJECT_PATH" --skip-install
+
+cd "$PROJECT_PATH"
+
+log "Installing Next.js dependencies..."
+install_with_approval
 
 echo ""
 divider
@@ -108,35 +155,23 @@ echo ""
 read -rp "  choose [1/2/3] (default: 1): " DB_CHOICE
 DB_CHOICE="${DB_CHOICE:-1}"
 
+log "Installing database packages..."
 case "$DB_CHOICE" in
+1)
+    run_pnpm pnpm add drizzle-orm dotenv pg
+    run_pnpm pnpm add -D drizzle-kit tsx @types/pg
+    ;;
 2)
-  DB_DRIVER="mysql2"
-  DB_DIALECT="mysql"
-  DB_LABEL="mysql"
-  ;;
+    run_pnpm pnpm add drizzle-orm dotenv mysql2
+    run_pnpm pnpm add -D drizzle-kit tsx
+    ;;
 3)
-  DB_DRIVER="better-sqlite3"
-  DB_DIALECT="sqlite"
-  DB_LABEL="sqlite"
-  ;;
-*)
-  DB_DRIVER="pg"
-  DB_DIALECT="postgresql"
-  DB_LABEL="postgresql"
-  ;;
+    run_pnpm pnpm add drizzle-orm dotenv better-sqlite3
+    run_pnpm pnpm add -D drizzle-kit tsx
+    ;;
 esac
 
-echo ""
-
-# ─────────────────────────────────────────────
-#  Install Drizzle
-# ─────────────────────────────────────────────
-cd "$PROJECT_PATH"
-
-log "installing drizzle-orm + drizzle-kit + $DB_LABEL..."
-pnpm add drizzle-orm dotenv "$DB_DRIVER" >/dev/null 2>&1
-pnpm add -D drizzle-kit tsx @types/pg >/dev/null 2>&1 # <---- remove @types/pg when not using postgres
-success "drizzle-orm  drizzle-kit  dotenv  tsx  $DB_LABEL"
+success "Database packages installed."
 
 # ─────────────────────────────────────────────
 #  Add more tools below -- just uncomment
@@ -156,7 +191,7 @@ success "trpc"
 
 log "installing shadcn/ui..."
 echo ""
-pnpm dlx shadcn@latest init
+pnpm dlx shadcn@latest init # choose VEGA (default preset of shadcn)
 echo ""
 success "shadcn/ui"
 
@@ -446,7 +481,7 @@ divider
 echo ""
 echo -e "  ${GREEN}${BOLD}all done, jaj.${RESET}"
 echo ""
-echo -e "  ${CYAN}  cd $PROJECT_NAME${RESET}"
+# echo -e "  ${CYAN}  cd $PROJECT_NAME${RESET}"
 echo -e "  ${DIM}  set DATABASE_URL in .env${RESET}"
 echo -e "  ${DIM}  wrap your layout with <TrpcProvider> from @/providers/trpc${RESET}"
 echo -e "  ${CYAN}  pnpm dev${RESET}"
