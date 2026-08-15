@@ -1,5 +1,8 @@
 #!/bin/bash
 
-tmux split-window -v -l 12%
-# tmux split-window -h -l 30%
 tmux split-window -h -l 50%
+tmux split-window -v -l 30%
+
+# id=$(tmux split-window -h -l 50% -P -F '#{pane_id}')
+# tmux split-window -v -l 30%
+# tmux send-keys -t "$id" 'em' Enter

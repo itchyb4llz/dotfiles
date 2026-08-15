@@ -1,198 +1,22 @@
-[colors.primary]
-foreground = "#e0def4"
-background = "#191724"
-# background = "#000000"
-dim_foreground = "#908caa"
-bright_foreground = "#e0def4"
-
-[colors.cursor]
-text = "#e0def4"
-cursor = "#524f67"
-
-[colors.vi_mode_cursor]
-text = "#e0def4"
-cursor = "#524f67"
-
-[colors.search.matches]
-foreground = "#908caa"
-background = "#26233a"
-
-[colors.search.focused_match]
-foreground = "#191724"
-background = "#ebbcba"
-
-[colors.hints.start]
-foreground = "#908caa"
-background = "#1f1d2e"
-
-[colors.hints.end]
-foreground = "#6e6a86"
-background = "#1f1d2e"
-
-[colors.line_indicator]
-foreground = "None"
-background = "None"
-
-[colors.footer_bar]
-foreground = "#e0def4"
-background = "#1f1d2e"
-
-[colors.selection]
-text = "#e0def4"
-background = "#403d52"
-
-[colors.normal]
-black = "#26233a"
-red = "#eb6f92"
-green = "#31748f"
-yellow = "#f6c177"
-blue = "#9ccfd8"
-magenta = "#c4a7e7"
-cyan = "#ebbcba"
-white = "#e0def4"
-
-[colors.bright]
-black = "#6e6a86"
-red = "#eb6f92"
-green = "#31748f"
-yellow = "#f6c177"
-blue = "#9ccfd8"
-magenta = "#c4a7e7"
-cyan = "#ebbcba"
-white = "#e0def4"
-
-[colors.dim]
-black = "#6e6a86"
-red = "#eb6f92"
-green = "#31748f"
-yellow = "#f6c177"
-blue = "#9ccfd8"
-magenta = "#c4a7e7"
-cyan = "#ebbcba"
-white = "#e0def4"
-
-[cursor]
-blink_interval = 150
-
-[cursor.style]
-shape = "Block"
-blinking = "Always"
-
-[general]
-live_config_reload = true
+general.import = [ "~/.config/omarchy/current/theme/alacritty.toml" ]
 
 [env]
 TERM = "xterm-256color"
 
 [font]
-# draw_bold_text_with_bright_colors = true
-size = 9
-
-[font.bold]
-family = "Agave Nerd Font"
-style = "Bold"
-
-[font.italic]
-family = "Agave Nerd Font"
-style = "MediumItalic"
-
-[font.normal]
-family = "Agave Nerd Font"
-style = "Regular"
-
-[[keyboard.bindings]]
-action = "Paste"
-key = "V"
-mods = "Control|Shift"
-
-[[keyboard.bindings]]
-action = "Copy"
-key = "C"
-mods = "Control|Shift"
-
-[[keyboard.bindings]]
-action = "PasteSelection"
-key = "Insert"
-mods = "Shift"
-
-[[keyboard.bindings]]
-action = "ResetFontSize"
-key = "Key0"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "IncreaseFontSize"
-key = "Equals"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "IncreaseFontSize"
-key = "Plus"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "DecreaseFontSize"
-key = "Minus"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "ToggleFullscreen"
-key = "F11"
-mods = "None"
-
-[[keyboard.bindings]]
-action = "Paste"
-key = "Paste"
-mods = "None"
-
-[[keyboard.bindings]]
-action = "Copy"
-key = "Copy"
-mods = "None"
-
-[[keyboard.bindings]]
-action = "ClearLogNotice"
-key = "L"
-mods = "Control"
-
-[[keyboard.bindings]]
-chars = "\f"
-key = "L"
-mods = "Control"
-
-[[keyboard.bindings]]
-action = "ScrollPageUp"
-key = "PageUp"
-mode = "~Alt"
-mods = "None"
-
-[[keyboard.bindings]]
-action = "ScrollPageDown"
-key = "PageDown"
-mode = "~Alt"
-mods = "None"
-
-[mouse]
-hide_when_typing = true
-
-[scrolling]
-history = 5000
+normal = { family = "Agave Nerd Font", style = "Regular" }
+bold = { family = "Agave Nerd Font", style = "Bold" }
+italic = { family = "Agave Nerd Font", style = "Italic" }
+size = 9.5
 
 [window]
-decorations = "full"
-dynamic_padding = true
-dynamic_title = true
-# opacity = 0.95
-title = "Alacritty"
+padding.x = 14
+padding.y = 14
+decorations = "None"
 
-[window.class]
-general = "Alacritty"
-instance = "Alacritty"
-
-[window.dimensions]
-columns = 210
-lines = 62
-
-[window.padding]
-x = 14
-y = 14
+[keyboard]
+bindings = [
+{ key = "Insert", mods = "Shift", action = "Paste" },
+{ key = "Insert", mods = "Control", action = "Copy" },
+  { key = "Return", mods = "Shift", chars = "\u001B\r" }
+]
