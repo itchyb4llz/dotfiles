@@ -1,31 +1,43 @@
 #!/usr/bin/bash
 
-cp -rf ~/.local/bin/* ~/.dotfiles/.local/bin/
+# cp -rf ~/.local/bin/* ~/.dotfiles/.local/bin/
+# cp -rf ~/.bashrc ~/.dotfiles/
+# cp -rf ~/.xinitrc ~/.dotfiles/
+# 
+# cp -rf ~/.config/alacritty/ ~/.dotfiles/.config/
+# cp -rf ~/.config/bspwm/ ~/.dotfiles/.config/
+# cp -rf ~/.config/dunst ~/.dotfiles/.config/
+# cp -rf ~/.config/fish/config.fish ~/.dotfiles/.config/fish/
+# cp -rf ~/.config/ghostty ~/.dotfiles/.config/
+# cp -rf ~/.config/i3/ ~/.dotfiles/.config/
+# cp -rf ~/.config/i3status/ ~/.dotfiles/.config/
+# cp -rf ~/.config/kitty/ ~/.dotfiles/.config/
+# cp -rf ~/.config/lazygit/ ~/.dotfiles/.config/
+# cp -rf ~/.config/mpv/ ~/.dotfiles/.config/
+# cp -rf ~/.config/picom/ ~/.dotfiles/.config/
+# cp -rf ~/.config/polybar/ ~/.dotfiles/.config/
+# cp -rf ~/.config/qtile/autostart.sh ~/.dotfiles/.config/qtile/
+# cp -rf ~/.config/qtile/colors.py ~/.dotfiles/.config/qtile/
+# cp -rf ~/.config/qtile/config.py ~/.dotfiles/.config/qtile/
+# cp -rf ~/.config/qtile/sxhkdrc ~/.dotfiles/.config/qtile/
+# cp -rf ~/.config/qutebrowser/config.py ~/.dotfiles/.config/qutebrowser/
+# cp -rf ~/.config/redshift/redshift.conf ~/.dotfiles/.config/redshift/
+# cp -rf ~/.config/rofi/ ~/.dotfiles/.config/
+# cp -rf ~/.config/sxhkd/ ~/.dotfiles/.config/
+# cp -rf ~/.config/tmux/tmux.conf ~/.dotfiles/.config/tmux/
+# cp -rf ~/.config/vimb/ ~/.dotfiles/.config/
+# cp -rf ~/.config/starship.toml ~/.dotfiles/.config/
+# 
+# echo "DONE!"
+
+cp -rf ~/.local/bin/ ~/.dotfiles/.local/
 cp -rf ~/.bashrc ~/.dotfiles/
-cp -rf ~/.xinitrc ~/.dotfiles/
 
 cp -rf ~/.config/alacritty/ ~/.dotfiles/.config/
-cp -rf ~/.config/bspwm/ ~/.dotfiles/.config/
-cp -rf ~/.config/dunst ~/.dotfiles/.config/
 cp -rf ~/.config/fish/config.fish ~/.dotfiles/.config/fish/
-cp -rf ~/.config/ghostty ~/.dotfiles/.config/
-cp -rf ~/.config/i3/ ~/.dotfiles/.config/
-cp -rf ~/.config/i3status/ ~/.dotfiles/.config/
-cp -rf ~/.config/kitty/ ~/.dotfiles/.config/
+cp -rf ~/.config/foot/ ~/.dotfiles/.config/
+cp -rf ~/.config/herdr/config.toml ~/.dotfiles/.config/herdr/
+cp -rf ~/.config/hypr/ ~/.dotfiles/.config/
 cp -rf ~/.config/lazygit/ ~/.dotfiles/.config/
-cp -rf ~/.config/mpv/ ~/.dotfiles/.config/
-cp -rf ~/.config/picom/ ~/.dotfiles/.config/
-cp -rf ~/.config/polybar/ ~/.dotfiles/.config/
-cp -rf ~/.config/qtile/autostart.sh ~/.dotfiles/.config/qtile/
-cp -rf ~/.config/qtile/colors.py ~/.dotfiles/.config/qtile/
-cp -rf ~/.config/qtile/config.py ~/.dotfiles/.config/qtile/
-cp -rf ~/.config/qtile/sxhkdrc ~/.dotfiles/.config/qtile/
-cp -rf ~/.config/qutebrowser/config.py ~/.dotfiles/.config/qutebrowser/
-cp -rf ~/.config/redshift/redshift.conf ~/.dotfiles/.config/redshift/
-cp -rf ~/.config/rofi/ ~/.dotfiles/.config/
-cp -rf ~/.config/sxhkd/ ~/.dotfiles/.config/
-cp -rf ~/.config/tmux/tmux.conf ~/.dotfiles/.config/tmux/
-cp -rf ~/.config/vimb/ ~/.dotfiles/.config/
+cp -rf ~/.config/tmux/*.conf ~/.dotfiles/.config/tmux/
 cp -rf ~/.config/starship.toml ~/.dotfiles/.config/
-
-echo "DONE!"

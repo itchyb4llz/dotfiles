@@ -1,7 +1,10 @@
 #!/bin/bash
 
-tmux split-window -h -l 50%
-tmux split-window -v -l 30%
+# tmux split-window -h -l 50%
+# tmux split-window -v -l 30%
+
+tmux split-window -h -l 40%
+tmux split-window -v -l 20%
 
 # id=$(tmux split-window -h -l 50% -P -F '#{pane_id}')
 # tmux split-window -v -l 30%
