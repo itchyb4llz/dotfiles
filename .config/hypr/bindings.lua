@@ -30,3 +30,9 @@
 
 o.bind("SUPER + d", nil, "omarchy-menu")
 o.bind("SUPER + q", "Close qindow", hl.dsp.window.close())
+
+-- Backstop for the built-in lid-open handler (bindings/utilities.lua):
+-- sometimes Hyprland reports the laptop panel as enabled while the kernel
+-- never actually re-modeset it, leaving it physically blank. This polls
+-- briefly and forces a real modeset if that mismatch shows up.
+o.bind("switch:off:Lid Switch", nil, "omarchy-fix-lid-display")

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Recovers the laptop panel when the GPU never actually re-modesets it on lid
+# open. Omarchy's built-in clamshell handler (omarchy-hyprland-monitor-clamshell)
+# sometimes leaves Hyprland believing eDP-1 is enabled while the kernel DRM
+# connector still reports enabled=disabled, so the panel stays physically dark.
+# This polls briefly after a lid-open event and forces a real modeset if that
+# mismatch is found.
+
+INTERNAL=$(omarchy-hyprland-monitor-laptop)
+[[ -n $INTERNAL ]] || exit 0
+
+drm_card=$(find /sys/class/drm -maxdepth 1 -name "card*-$INTERNAL" 2>/dev/null | head -1)
+[[ -n $drm_card ]] || exit 0
+
+for _ in 1 2 3 4 5 6; do
+  sleep 1
+
+  kernel_enabled=$(cat "$drm_card/enabled" 2>/dev/null)
+  [[ $kernel_enabled == "enabled" ]] && exit 0
+
+  hypr_disabled=$(hyprctl monitors all -j 2>/dev/null | jq -r --arg n "$INTERNAL" '.[] | select(.name == $n) | .disabled')
+  [[ $hypr_disabled == "false" ]] || continue
+
+  # Hyprland thinks it's on but the GPU never modeset it: force it explicitly.
+  hyprctl eval "hl.monitor({ output = \"$INTERNAL\", mode = \"preferred\", position = \"auto\", scale = 1, disabled = false })" >/dev/null 2>&1
+done
