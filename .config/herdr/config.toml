@@ -17,7 +17,8 @@ panel_bg = "black"
 new_cwd = "follow"
 
 [keys]
-prefix = "ctrl+space"
+# set-option -g prefix M-f
+prefix = "alt+f"
 
 # Config and help
 reload_config = "prefix+q"
@@ -28,20 +29,24 @@ detach = "prefix+d"
 copy_mode = "prefix+["
 
 # Panes
-split_horizontal = ["prefix+h", "alt+enter"]
-split_vertical = ["prefix+v", "alt+shift+enter"]
+# bind -n M-v/M-s split-window -h/-v
+split_horizontal = ["prefix+h", "alt+enter", "alt+v"]
+split_vertical = ["prefix+v", "alt+shift+enter", "alt+s"]
 close_pane = ["prefix+x", "alt+esc"]
-zoom = "prefix+z"
+# bind -r C-m resize-pane -Z
+zoom = "prefix+ctrl+m"
 last_pane = "prefix+;"
 
-focus_pane_left = "ctrl+alt+left"
-focus_pane_down = "ctrl+alt+down"
-focus_pane_up = "ctrl+alt+up"
-focus_pane_right = "ctrl+alt+right"
+# bind -n M-h/j/k/l select-pane -L/-D/-U/-R
+focus_pane_left = "alt+h"
+focus_pane_down = "alt+j"
+focus_pane_up = "alt+k"
+focus_pane_right = "alt+l"
 
-resize_mode = ["prefix+ctrl+left", "prefix+ctrl+down", "prefix+ctrl+up", "prefix+ctrl+right"]
+# bind -r C-h/j/k/l resize-pane -L/-D/-U/-R
+resize_mode = ["prefix+ctrl+h", "prefix+ctrl+j", "prefix+ctrl+k", "prefix+ctrl+l"]
 
-# Like resize-pane on C-M-S-arrows
+# No current tmux equivalent (tmux.conf no longer binds C-M-S-arrows)
 resize_pane_left = "ctrl+alt+shift+left"
 resize_pane_down = "ctrl+alt+shift+down"
 resize_pane_up = "ctrl+alt+shift+up"
@@ -58,9 +63,9 @@ switch_tab = ["prefix+1..9", "alt+1..9"]
 previous_tab = ["prefix+p", "alt+left"]
 next_tab = ["prefix+n", "alt+right"]
 
-# Like swap-window -t -1/+1 on M-S-Left/Right
-move_tab_previous = "alt+shift+left"
-move_tab_next = "alt+shift+right"
+# bind -n C-S-Left/Right swap-window -t -1/+1
+move_tab_previous = "ctrl+shift+left"
+move_tab_next = "ctrl+shift+right"
 
 # Sessions -> workspaces
 new_workspace = "prefix+shift+c"
