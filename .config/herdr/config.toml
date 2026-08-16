@@ -16,6 +16,9 @@ panel_bg = "black"
 # Matches -c "#{pane_current_path}" on every split, window, and session
 new_cwd = "follow"
 
+# Empty means $SHELL, then /bin/sh.
+default_shell = "fish"
+
 [keys]
 # set-option -g prefix M-f
 prefix = "alt+f"
@@ -30,8 +33,8 @@ copy_mode = "prefix+["
 
 # Panes
 # bind -n M-v/M-s split-window -h/-v
-split_horizontal = ["prefix+h", "alt+enter", "alt+v"]
-split_vertical = ["prefix+v", "alt+shift+enter", "alt+s"]
+split_horizontal = ["prefix+h", "alt+enter", "alt+s"]
+split_vertical = ["prefix+v", "alt+shift+enter", "alt+v"]
 close_pane = ["prefix+x", "alt+esc"]
 # bind -r C-m resize-pane -Z
 zoom = "prefix+ctrl+m"
@@ -103,4 +106,4 @@ window_title = "{hostname}: {workspace}"
 
 show_agent_labels_on_pane_borders = false
 [ui.toast]
-delivery = "off"
+delivery = "system"
