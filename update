@@ -41,3 +41,6 @@ cp -rf ~/.config/hypr/ ~/.dotfiles/.config/
 cp -rf ~/.config/lazygit/ ~/.dotfiles/.config/
 cp -rf ~/.config/tmux/*.conf ~/.dotfiles/.config/tmux/
 cp -rf ~/.config/starship.toml ~/.dotfiles/.config/
+
+cp -rf ~/.config/omarchy/bar/modules/ ~/.dotfiles/.config/omarchy/bar/
+cp -rf ~/.config/omarchy/shell.json ~/.dotfiles/.config/omarchy/
