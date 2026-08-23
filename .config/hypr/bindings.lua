@@ -31,6 +31,10 @@
 o.bind("SUPER + d", nil, "omarchy-menu")
 o.bind("SUPER + q", "Close qindow", hl.dsp.window.close())
 
+-- Unbind default SUPER+SHIFT+RETURN (was: Browser)
+hl.unbind("SUPER + SHIFT + RETURN")
+o.bind("SUPER + SHIFT + RETURN", "Emacs", { launch = "emacs" })
+
 -- Backstop for the built-in lid-open handler (bindings/utilities.lua):
 -- sometimes Hyprland reports the laptop panel as enabled while the kernel
 -- never actually re-modeset it, leaving it physically blank. This polls
