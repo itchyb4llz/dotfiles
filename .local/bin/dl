@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Interactive downloader: paste a URL, confirm/rename the file, done.
+set -euo pipefail
+
+echo "Paste the URL to download, then press Enter:"
+read -r url
+
+if [[ -z "$url" ]]; then
+  echo "No URL given, aborting." >&2
+  exit 1
+fi
+
+default_name="$(basename "${url%%\?*}")"
+[[ -z "$default_name" ]] && default_name="download"
+
+read -rp "Save as [$default_name]: " name
+name="${name:-$default_name}"
+
+dest_dir="$HOME/Downloads"
+mkdir -p "$dest_dir"
+dest="$dest_dir/$name"
+
+if [[ -e "$dest" ]]; then
+  read -rp "$dest already exists — overwrite? [y/N] " confirm
+  if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+    echo "Aborted." >&2
+    exit 1
+  fi
+fi
+
+echo "Downloading to $dest ..."
+curl -L -C - -o "$dest" "$url"
+
+echo "Done: $dest"

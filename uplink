@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# uplink — send anything not-yet-wired-in back up to the repo.
+#
+# Once a path has been symlinked by ./jack-in, editing it live already edits
+# the repo copy — same file, nothing to sync. This only matters for configs
+# that still exist as plain files/dirs on this machine (never jacked in here,
+# or from before jack-in existed): it copies those into the repo and tells
+# you to run ./jack-in so they become symlinks and you never have to do this
+# again for that path.
+set -euo pipefail
+
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$DOTFILES/lib/manifest.sh"
+
+captured=0
+already_linked=0
+missing=0
+
+for entry in "${MANIFEST[@]}"; do
+  IFS=':' read -r group type relpath <<< "$entry"
+  src="$HOME/$relpath"
+  dst="$DOTFILES/$relpath"
+
+  if [[ -L "$src" && "$(readlink "$src")" == "$dst" ]]; then
+    already_linked=$((already_linked + 1))
+    continue
+  fi
+
+  if [[ ! -e "$src" ]]; then
+    missing=$((missing + 1))
+    continue
+  fi
+
+  mkdir -p "$(dirname "$dst")"
+  if [[ "$type" == "dir" ]]; then
+    # "$src/." (not "$src") copies src's *contents* into dst — cp'ing a
+    # directory into an already-existing dst nests it (dst/src) instead of
+    # overwriting it, which is not what a re-sync is supposed to do.
+    mkdir -p "$dst"
+    cp -rf "$src/." "$dst/"
+  else
+    cp -f "$src" "$dst"
+  fi
+  echo "captured: $relpath (not yet linked — run ./jack-in to symlink it)"
+  captured=$((captured + 1))
+done
+
+echo
+echo "Done: $captured captured, $already_linked already linked, $missing not present on this machine."
+echo
+
+if [[ -n "$(git -C "$DOTFILES" status --short)" ]]; then
+  echo "Repo changes:"
+  git -C "$DOTFILES" status --short
+else
+  echo "Nothing changed in the repo."
+fi

@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# jack-in — wire a fresh machine into these dotfiles.
+#
+# Symlinks the configs tracked in lib/manifest.sh from this repo into your
+# home directory, grouped by profile. Anything already sitting at the
+# destination gets backed up (never deleted) before the symlink goes in.
+# Package installation is a separate concern — see ./install.
+set -euo pipefail
+
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$DOTFILES/lib/manifest.sh"
+
+echo "jack-in: symlinking configs from $DOTFILES into \$HOME"
+echo
+echo "Which setup are you wiring up?"
+echo "  1) Omarchy / Hyprland   — hypr, omarchy, foot, herdr + shared tools"
+echo "  2) Vanilla Arch WM      — i3, qtile, bspwm, polybar, rofi, ... + shared tools"
+echo "  3) Both"
+read -rp "Choice [1]: " profile_choice
+profile_choice="${profile_choice:-1}"
+
+case "$profile_choice" in
+  1) groups=(shared omarchy) ;;
+  2) groups=(shared vanilla) ;;
+  3) groups=(shared omarchy vanilla) ;;
+  *)
+    echo "Unrecognized choice, defaulting to Omarchy / Hyprland."
+    groups=(shared omarchy)
+    ;;
+esac
+
+linked=0
+skipped=0
+backed_up=()
+
+in_groups() {
+  local target="$1"
+  for g in "${groups[@]}"; do
+    [[ "$g" == "$target" ]] && return 0
+  done
+  return 1
+}
+
+link_item() {
+  local type="$1" relpath="$2"
+  local src="$DOTFILES/$relpath"
+  local dst="$HOME/$relpath"
+
+  if [[ ! -e "$src" ]]; then
+    echo "  ! missing in dotfiles, skipping: $relpath"
+    return
+  fi
+
+  mkdir -p "$(dirname "$dst")"
+
+  if [[ -L "$dst" && "$(readlink "$dst")" == "$src" ]]; then
+    skipped=$((skipped + 1))
+    return
+  fi
+
+  if [[ -e "$dst" || -L "$dst" ]]; then
+    local backup="${dst}.pre-jack-in.$(date +%Y%m%d%H%M%S)"
+    mv "$dst" "$backup"
+    backed_up+=("$dst -> $backup")
+  fi
+
+  ln -s "$src" "$dst"
+  linked=$((linked + 1))
+  echo "  linked ($type): $relpath"
+}
+
+echo
+for entry in "${MANIFEST[@]}"; do
+  IFS=':' read -r group type relpath <<< "$entry"
+  in_groups "$group" && link_item "$type" "$relpath"
+done
+
+echo
+echo "Done: $linked linked, $skipped already up to date."
+
+if [[ ${#backed_up[@]} -gt 0 ]]; then
+  echo
+  echo "Existing configs backed up (nothing was deleted):"
+  for b in "${backed_up[@]}"; do echo "  $b"; done
+fi
+
+echo
+echo "Note: this only deploys config files. For packages, run ./install"
+echo "(vanilla-Arch set) or use Omarchy's own installer for the Hyprland side."

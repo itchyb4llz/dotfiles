@@ -79,6 +79,11 @@ sudo systemctl enable preload.service
 # sudo systemctl enable nvidia-resume.service
 # sudo systemctl enable nvidia-suspend.service
 
+printf "\e[1;32m###########################################\e[0m\n"
+printf "\e[1;32m## Packages installed. Wire up configs:  ##\e[0m\n"
+printf "\e[1;32m##              ./jack-in                ##\e[0m\n"
+printf "\e[1;32m###########################################\e[0m\n"
+
 while true; do
   read -p "Do you want to reboot? (recommended) [Y/n] " yn
   case $yn in
