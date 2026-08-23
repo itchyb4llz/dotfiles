@@ -16,9 +16,9 @@ Panel {
 
   // ---- Configuration (overridable per-instance via shell.json settings) ----
   readonly property var durations: ({
-    focusMinutes: setting("focusMinutes", 25),
-    shortBreakMinutes: setting("shortBreakMinutes", 5),
-    longBreakMinutes: setting("longBreakMinutes", 15)
+    focusMinutes: setting("focusMinutes", 50),
+    shortBreakMinutes: setting("shortBreakMinutes", 10),
+    longBreakMinutes: setting("longBreakMinutes", 30)
   })
   readonly property int cyclesUntilLong: setting("cyclesUntilLong", 4)
 
