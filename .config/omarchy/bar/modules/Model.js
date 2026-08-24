@@ -52,3 +52,23 @@ function progressFraction(remainingSeconds, totalSeconds) {
   if (totalSeconds <= 0) return 0
   return clamp((totalSeconds - remainingSeconds) / totalSeconds, 0, 1)
 }
+
+// Shown on the break-lock overlay when a key is pressed while it's up --
+// keyboard input never gets through to whatever's underneath, so this is
+// the only feedback a keystroke gets.
+var teaseMessages = [
+  "Nice try. Still on break.",
+  "Nope — put it down.",
+  "The keyboard's on break too.",
+  "That key does nothing right now.",
+  "Zero points for effort.",
+  "Typing won't do it."
+]
+
+// Picks a random tease, avoiding an immediate repeat of the last one shown.
+function randomTeaseMessage(previous) {
+  if (teaseMessages.length <= 1) return teaseMessages[0] || ""
+  var pick
+  do { pick = teaseMessages[Math.floor(Math.random() * teaseMessages.length)] } while (pick === previous)
+  return pick
+}
