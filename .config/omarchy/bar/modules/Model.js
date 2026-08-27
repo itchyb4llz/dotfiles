@@ -53,6 +53,18 @@ function progressFraction(remainingSeconds, totalSeconds) {
   return clamp((totalSeconds - remainingSeconds) / totalSeconds, 0, 1)
 }
 
+// Local calendar-day key (YYYY-MM-DD), used to detect midnight rollover for
+// the daily focus-session counter. Takes a Date so it stays testable without
+// a live clock.
+function dateKey(date) {
+  var d = date || new Date()
+  var m = String(d.getMonth() + 1)
+  var day = String(d.getDate())
+  if (m.length < 2) m = "0" + m
+  if (day.length < 2) day = "0" + day
+  return d.getFullYear() + "-" + m + "-" + day
+}
+
 // Shown on the break-lock overlay when a key is pressed while it's up --
 // keyboard input never gets through to whatever's underneath, so this is
 // the only feedback a keystroke gets.
