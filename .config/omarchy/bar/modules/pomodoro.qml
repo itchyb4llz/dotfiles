@@ -458,14 +458,6 @@ Panel {
             verticalPadding: Style.spacing.controlPaddingY
             onClicked: root.snoozeBreak(5)
           }
-
-          Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "right-click to dismiss early"
-            color: Util.alpha(Color.lock.text, 0.5)
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.caption
-          }
         }
 
         // Tease callout: hidden until a keystroke lands, then pops in with a
