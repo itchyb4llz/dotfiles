@@ -433,7 +433,7 @@ Panel {
           Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.statusText.toUpperCase()
-            color: "white"
+            color: Color.lock.text
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.title
             font.bold: true
@@ -453,7 +453,7 @@ Panel {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "+5 min"
             iconText: "💤"
-            foreground: "white"
+            foreground: Color.lock.text
             fontFamily: root.bar.fontFamily
             bordered: true
             horizontalPadding: Style.spacing.controlPaddingX
@@ -464,7 +464,7 @@ Panel {
           Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "right-click to dismiss early"
-            color: Qt.rgba(1, 1, 1, 0.5)
+            color: Util.alpha(Color.lock.text, 0.5)
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.caption
           }
@@ -564,7 +564,7 @@ Panel {
           Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "BREAK'S OVER"
-            color: "white"
+            color: Color.lock.text
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.title
             font.bold: true
@@ -584,7 +584,7 @@ Panel {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Start"
             iconText: "▶"
-            foreground: "white"
+            foreground: Color.lock.text
             fontFamily: root.bar.fontFamily
             bordered: true
             horizontalPadding: Style.spacing.controlPaddingX
@@ -595,7 +595,7 @@ Panel {
           Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "any key starts · right-click to dismiss"
-            color: Qt.rgba(1, 1, 1, 0.5)
+            color: Util.alpha(Color.lock.text, 0.5)
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.caption
           }
