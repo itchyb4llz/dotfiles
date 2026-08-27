@@ -182,8 +182,6 @@ Panel {
     bar: root.bar
     text: "🍅 " + root.timeText
     slotSize: Style.bar.iconSlot * 2.6
-    active: true
-    activeColor: root.sessionColor
     tooltipText: root.statusText + (root.running ? "" : (root.readyPromptActive ? " (ready to start)" : " (paused)"))
     onPressed: function(b) {
       if (b === Qt.RightButton) root.toggleRun()
