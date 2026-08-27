@@ -27,3 +27,10 @@ require("default.hypr.toggles")
 
 -- Add any other personal Hyprland configuration below.
 -- o.window("qemu", { workspace = "5" })
+
+-- Pin apps to dedicated workspaces.
+o.window("foot", { workspace = "1" })
+o.window("brave-browser", { workspace = "2" })
+o.window("TradingView", { workspace = "5" })
+o.window("discord", { workspace = "6" })
+o.window("obs", { workspace = "9" })

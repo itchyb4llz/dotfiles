@@ -3,6 +3,15 @@
 
 -- Keyboard layout and options.
 -- See https://wiki.hypr.land/Configuring/Basics/Variables/#input
+hl.config({
+  input = {
+    touchpad = {
+      -- Use natural (inverse) scrolling.
+      natural_scroll = true,
+    },
+  },
+})
+
 -- hl.config({
 --   input = {
 --     -- Use multiple keyboard layouts and switch between them with Left Alt + Right Alt.
