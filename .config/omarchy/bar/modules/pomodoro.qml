@@ -43,7 +43,7 @@ Panel {
   property bool breakLockActive: false
   // Drives the "ready to focus?" overlay. Set whenever a break ends
   // (naturally or via Skip) so a session never quietly rolls into work
-  // time; cleared by starting or by an explicit dismissal.
+  // time; cleared only by clicking Start (or a Reset).
   property bool readyPromptActive: false
 
   // ---- Daily focus-session counter (in-memory; resets on shell restart,
@@ -126,15 +126,11 @@ Panel {
     remainingSeconds += extra
   }
 
-  // Ready-prompt overlay: Start begins the session immediately; dismiss
-  // just hides the prompt and leaves the timer paused for a manual Start
-  // later from the bar pill or panel.
+  // Ready-prompt overlay: the Start button is the only way to clear it.
   function startFromReadyPrompt() {
     readyPromptActive = false
     start()
   }
-
-  function dismissReadyPrompt() { readyPromptActive = false }
 
   function tick() {
     if (!running) return
@@ -492,10 +488,10 @@ Panel {
   }
 
   // ---- Ready-prompt overlay: fires when a break ends (naturally or via
-  // Skip) instead of silently rolling into focus. Any key, a click on the
-  // Start button, or a left-click on the backdrop begins the session;
-  // right-click dismisses and leaves the timer paused for a manual Start
-  // later. One instance per screen, same as the break-lock.
+  // Skip) instead of silently rolling into focus. The Start button is the
+  // only way through -- keys and clicks on the backdrop are swallowed and
+  // do nothing, same as the break-lock overlay. One instance per screen,
+  // same as the break-lock.
   Variants {
     model: Quickshell.screens
 
@@ -526,19 +522,15 @@ Panel {
         anchors.fill: parent
         focus: true
 
-        // Any keystroke means "I'm here" -- start immediately.
-        Keys.onPressed: function(event) {
-          root.startFromReadyPrompt()
-          event.accepted = true
-        }
+        // Every keystroke is swallowed here -- it never reaches the app
+        // underneath, and it never starts the session either. Only the
+        // Start button does that.
+        Keys.onPressed: function(event) { event.accepted = true }
 
         MouseArea {
           anchors.fill: parent
           acceptedButtons: Qt.LeftButton | Qt.RightButton
-          onClicked: function(mouse) {
-            if (mouse.button === Qt.RightButton) root.dismissReadyPrompt()
-            else root.startFromReadyPrompt()
-          }
+          onClicked: {}
         }
 
         Column {
@@ -580,14 +572,6 @@ Panel {
             horizontalPadding: Style.spacing.controlPaddingX
             verticalPadding: Style.spacing.controlPaddingY
             onClicked: root.startFromReadyPrompt()
-          }
-
-          Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "any key starts · right-click to dismiss"
-            color: Util.alpha(Color.lock.text, 0.5)
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.caption
           }
         }
       }
