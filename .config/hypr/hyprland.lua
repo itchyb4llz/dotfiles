@@ -34,3 +34,7 @@ o.window("brave-browser", { workspace = "2" })
 o.window("TradingView", { workspace = "5" })
 o.window("discord", { workspace = "6" })
 o.window("obs", { workspace = "9" })
+
+-- Keep Discord and TradingView fully opaque (no default transparency).
+o.window("discord", { tag = "-default-opacity", opacity = "1 1" })
+o.window("TradingView", { tag = "-default-opacity", opacity = "1 1" })
