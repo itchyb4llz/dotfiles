@@ -17,8 +17,16 @@ selection=$(herdr agent list | jq -r --argjson ws "$workspaces" '
      (.terminal_title_stripped // "")]
   | @tsv' |
   column -t -s $'\t' |
-  fzf --reverse --no-sort --prompt "agent> " \
+  fzf --reverse --no-sort --no-input \
+      --bind 'j:down,k:up,q:abort,l:accept,g:first,G:last' \
       --with-nth 2.. --preview 'herdr agent read {1} 2>/dev/null | tail -n 40' \
       --preview-window 'down,60%')
 
-[ -n "$selection" ] && herdr agent focus "${selection%% *}" > /dev/null
+[ -z "$selection" ] && exit 0
+
+# Focus after the popup has closed. herdr kills the popup's children, so run it
+# as a transient systemd unit. Needs herdr server >= 0.9.1: older servers change
+# focus without moving the attached client's view.
+systemd-run --user --quiet --collect \
+  --setenv=HERDR_SOCKET_PATH="$HERDR_SOCKET_PATH" \
+  bash -c 'sleep 0.3; exec herdr agent focus "$1" > "${XDG_RUNTIME_DIR:-/tmp}/herdr-agents.log" 2>&1' _ "${selection%% *}"
