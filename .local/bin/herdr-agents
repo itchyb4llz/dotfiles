@@ -1,0 +1,24 @@
+#!/bin/bash
+# Agents-only picker for herdr, sorted by priority (blocked > done > working > idle).
+# Bound to prefix+a as a popup in ~/.config/herdr/config.toml.
+
+workspaces=$(herdr workspace list)
+
+selection=$(herdr agent list | jq -r --argjson ws "$workspaces" '
+  ($ws.result.workspaces | map({(.workspace_id): .label}) | add) as $labels
+  | {"blocked": 0, "done": 1, "working": 2, "idle": 3} as $rank
+  | .result.agents
+  | sort_by($rank[.agent_status] // 4, .workspace_id)
+  | .[]
+  | [.pane_id,
+     .agent_status,
+     ($labels[.workspace_id] // .workspace_id),
+     .agent,
+     (.terminal_title_stripped // "")]
+  | @tsv' |
+  column -t -s $'\t' |
+  fzf --reverse --no-sort --prompt "agent> " \
+      --with-nth 2.. --preview 'herdr agent read {1} 2>/dev/null | tail -n 40' \
+      --preview-window 'down,60%')
+
+[ -n "$selection" ] && herdr agent focus "${selection%% *}" > /dev/null

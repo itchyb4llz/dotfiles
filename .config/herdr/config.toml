@@ -77,6 +77,14 @@ close_workspace = "prefix+shift+k"
 previous_workspace = ["prefix+shift+p", "alt+up"]
 next_workspace = ["prefix+shift+n", "alt+down"]
 
+# Like goto (prefix+g), but agents only, sorted blocked > done > working > idle
+[[keys.command]]
+key = "prefix+a"
+type = "popup"
+command = "herdr-agents"
+width = "80%"
+height = "80%"
+
 [ui]
 accent = "blue"
 
