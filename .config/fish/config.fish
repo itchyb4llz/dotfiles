@@ -7,8 +7,10 @@ set -gx TERM xterm-256color
 # Set EDITOR/VISUAL as emacs
 # set EDITOR emacsclient -c -a emacs
 # set VISUAL emacsclient -c -a emacs
-set -gx EDITOR vim
-set -gx VISUAL vim
+# `alias vim nvim` does not reach $EDITOR, and there is no ~/.vimrc on this box —
+# git and reviewr were both opening bare vim.
+set -gx EDITOR nvim
+set -gx VISUAL nvim
 set -gx ANDROID_HOME $HOME/Android/Sdk/
 set -gx PATH $ANDROID_HOME/platform-tools $PATH
 set -gx PATH /usr/bin $PATH

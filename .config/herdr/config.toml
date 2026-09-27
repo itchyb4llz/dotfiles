@@ -85,6 +85,18 @@ command = "herdr-agents"
 width = "80%"
 height = "80%"
 
+# Whole-file watcher beside the agent: nvim over every changed file in the repo.
+[[keys.command]]
+key = "prefix+f"
+type = "shell"
+command = "herdr-watch"
+
+# The reviewr plugin ships toggle/open/close actions but binds no key.
+[[keys.command]]
+key = "prefix+alt+r"
+type = "shell"
+command = "herdr plugin action invoke --plugin persiyanov.reviewr toggle"
+
 [ui]
 accent = "blue"
 

@@ -1,0 +1,48 @@
+#!/bin/bash
+# Toggle an nvim "watch" pane beside the current one: the whole of every file the
+# agents are changing in this repo, reloading live as they write.
+# Bound to prefix+f as a shell command in ~/.config/herdr/config.toml.
+set -euo pipefail
+
+# Share of the width the watcher takes. Whole files want more room than the chat.
+ratio=0.6
+
+die() {
+  herdr notification show "herdr-watch" --body "$1" --position top-right
+  exit 1
+}
+
+cur=$(herdr pane current) || die "no current pane"
+src=$(jq -r '.result.pane.pane_id' <<<"$cur")
+tab=$(jq -r '.result.pane.tab_id' <<<"$cur")
+cwd=$(jq -r '.result.pane.foreground_cwd // .result.pane.cwd' <<<"$cur")
+
+# Already open in this tab? Then this is the close half of the toggle.
+# `herdr pane rename` sets `label`, which is what `pane list` reports back.
+existing=$(herdr pane list | jq -r --arg tab "$tab" \
+  '.result.panes[] | select(.tab_id == $tab and .label == "watch") | .pane_id' | head -1)
+if [ -n "$existing" ]; then
+  herdr pane close "$existing" > /dev/null
+  exit 0
+fi
+
+repo=$(git -C "$cwd" rev-parse --show-toplevel 2> /dev/null) || die "not a git repo: $cwd"
+
+# `pane split` has no --command, so split unfocused and diff the pane list to
+# learn the new id — that keeps focus in the agent pane, where you're typing.
+before=$(herdr pane list | jq -r '.result.panes[].pane_id' | sort)
+herdr pane split --pane "$src" --direction right --ratio "$ratio" --cwd "$repo" --no-focus > /dev/null
+after=$(herdr pane list | jq -r '.result.panes[].pane_id' | sort)
+new=$(comm -13 <(echo "$before") <(echo "$after") | head -1)
+[ -n "$new" ] || die "split produced no new pane"
+
+# `pane split` only splits right or down, so the watcher lands on the right.
+# Swap it with the pane it came from to put it on the left of the agent.
+herdr pane swap --source-pane "$new" --target-pane "$src" > /dev/null
+
+herdr pane rename "$new" watch > /dev/null
+
+# `pane run` joins its argv into a shell line without quoting it, and the pane's
+# shell is fish, where bare parens are command substitution. Pass the -c argument
+# with its own literal single quotes so the pane's shell sees one plain string.
+herdr pane run "$new" nvim -c "'lua require(\"config.watch\").start()'" > /dev/null
