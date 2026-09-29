@@ -39,7 +39,7 @@ function zd
 end
 
 function dump
-    set -l dir (find ~/files/work/_dumps -mindepth 1 -maxdepth 1 -type d -print 2> /dev/null | fzf-tmux -p --reverse)
+    set -l dir (find ~/dumps -mindepth 1 -maxdepth 1 -type d -print 2> /dev/null | fzf-tmux -p --reverse)
     if test -n "$dir"
         cd "$dir"
     end
