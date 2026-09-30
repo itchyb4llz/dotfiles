@@ -1,0 +1,30 @@
+#!/bin/bash
+# Toggle an nvim "watch" pane beside the current one: the whole of every file the
+# agents are changing in this repo, reloading live as they write.
+# The tmux twin of herdr-watch, bound to prefix+f in ~/.config/tmux/tmux.conf,
+# which passes the pane it was pressed in as $1.
+set -euo pipefail
+
+# Share of the width the watcher takes. Whole files want more room than the chat.
+size=70%
+
+src=${1:-$(tmux display-message -p '#{pane_id}')}
+
+# Already open in this window? Then this is the close half of the toggle.
+# The watcher is marked with the @watch pane option when it's made.
+existing=$(tmux list-panes -t "$src" -F '#{pane_id} #{@watch}' | awk '$2 == "1" { print $1; exit }')
+if [ -n "$existing" ]; then
+  tmux kill-pane -t "$existing"
+  exit 0
+fi
+
+cwd=$(tmux display-message -p -t "$src" '#{pane_current_path}')
+repo=$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null) || {
+  tmux display-message "tmux-watch: not a git repo: $cwd"
+  exit 1
+}
+
+# -b puts it on the left of the agent, -d keeps focus in the agent pane.
+new=$(tmux split-window -t "$src" -hbd -l "$size" -c "$repo" -P -F '#{pane_id}' \
+  "nvim -c 'lua require(\"config.watch\").start()'")
+tmux set-option -p -t "$new" @watch 1
