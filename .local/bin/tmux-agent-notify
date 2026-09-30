@@ -1,0 +1,62 @@
+#!/bin/bash
+# Desktop notification when a Claude agent running in tmux finishes or needs you,
+# the tmux side of herdr's `[ui.toast] delivery = "system"`.
+# Wired as a Stop and Notification hook in ~/.claude/settings.json; reads the
+# hook's JSON on stdin. Clicking the toast jumps to the agent's pane.
+#
+#   tmux-agent-notify           hook mode (stdin: hook JSON)
+#   tmux-agent-notify focus %N  switch the tmux client to pane %N and raise it
+set -euo pipefail
+
+if [ "${1:-}" = focus ]; then
+  pane=$2
+  tmux switch-client -t "$pane" 2> /dev/null || true
+  tmux select-window -t "$pane"
+  tmux select-pane -t "$pane"
+  # Raise the terminal the tmux client is drawn in: the client's parent process.
+  client_pid=$(tmux display-message -p -t "$pane" '#{client_pid}' 2> /dev/null || true)
+  if [ -n "$client_pid" ]; then
+    term_pid=$(ps -o ppid= -p "$client_pid" | tr -d ' ')
+    hyprctl dispatch focuswindow "pid:$term_pid" > /dev/null 2>&1 || true
+  fi
+  exit 0
+fi
+
+input=$(cat)
+
+# herdr already toasts for its own panes; outside tmux there's no pane to name.
+[ "${HERDR_ENV:-}" = 1 ] && exit 0
+[ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ] || exit 0
+
+# Subagents stop all the time; only the main agent's state matters.
+[ -n "$(jq -r '.agent_id // empty' <<< "$input")" ] && exit 0
+
+event=$(jq -r '.hook_event_name // empty' <<< "$input")
+case $event in
+  Stop)
+    headline="Claude is done"
+    urgency=normal
+    ;;
+  Notification)
+    # idle_prompt fires a minute after Stop for the same finished turn.
+    [ "$(jq -r '.notification_type // empty' <<< "$input")" = idle_prompt ] && exit 0
+    headline=$(jq -r '.message // "Claude needs your input"' <<< "$input")
+    urgency=critical
+    ;;
+  *) exit 0 ;;
+esac
+
+# Don't toast about the pane you're looking at: active pane of the active window,
+# in a session a focused client is showing.
+read -r pane_active window_active session < <(tmux display-message -p -t "$TMUX_PANE" \
+  '#{pane_active} #{window_active} #{session_name}')
+if [ "$pane_active$window_active" = 11 ] &&
+  tmux list-clients -F '#{client_flags} #{client_session}' |
+  awk -v s="$session" '$2 == s && $1 ~ /focused/ { f = 1 } END { exit !f }'; then
+  exit 0
+fi
+
+where=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}:#{window_index} · #{b:pane_current_path}')
+
+omarchy-notification-send -u "$urgency" -g 󰚩 --app-name tmux "$headline" "$where" \
+  --exec "$HOME/.local/bin/tmux-agent-notify" focus "$TMUX_PANE"
