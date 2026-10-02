@@ -29,7 +29,6 @@ require("default.hypr.toggles")
 -- o.window("qemu", { workspace = "5" })
 
 -- Pin apps to dedicated workspaces.
-o.window("foot", { workspace = "1" })
 o.window("brave-browser", { workspace = "2" })
 o.window("TradingView", { workspace = "5" })
 o.window("discord", { workspace = "6" })
