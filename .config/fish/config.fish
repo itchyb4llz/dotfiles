@@ -31,6 +31,28 @@ function fish_user_key_bindings
     fish_vi_key_bindings
 end
 
+# herdr numbers its tabs; name each one after the directory of the pane that last
+# cd'd in it, like tmux's automatic-rename. A name set with prefix+r sticks: only
+# a bare number or the name this hook set last gets replaced.
+if set -q HERDR_PANE_ID
+    function __herdr_tab_name --on-variable PWD
+        # Look the tab up each time: HERDR_TAB_ID goes stale if the pane is moved
+        set -l tab (herdr pane get $HERDR_PANE_ID 2>/dev/null | jq -r '.result.pane.tab_id // empty')
+        test -n "$tab"; or return
+        set -l label (herdr tab get $tab 2>/dev/null | jq -r '.result.tab.label // empty')
+        set -l mark $XDG_RUNTIME_DIR/herdr-tab-names/(string replace -a : _ $tab)
+        set -l name (path basename -- $PWD)
+        test "$PWD" = "$HOME"; and set name '~'
+        test "$label" = "$name"; and return
+        if string match -qr '^\d+$' -- $label; or test "$label" = "$(cat $mark 2>/dev/null)"
+            herdr tab rename $tab $name >/dev/null 2>&1
+            mkdir -p (path dirname $mark)
+            echo $name >$mark
+        end
+    end
+    __herdr_tab_name
+end
+
 function zd
     set -l dir (find ~/Projects/ -mindepth 1 -maxdepth 1 -type d -print 2> /dev/null | fzf-tmux -p --reverse)
     if test -n "$dir"
