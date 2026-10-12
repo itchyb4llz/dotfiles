@@ -30,12 +30,12 @@ require("default.hypr.toggles")
 
 -- Pin apps to dedicated workspaces.
 o.window("brave-browser", { workspace = "2" })
-o.window("TradingView", { workspace = "5" })
+o.window("tradingview", { workspace = "5" })
 o.window("discord", { workspace = "6" })
 o.window("obs", { workspace = "9" })
 
 -- Keep Discord, TradingView, Cursor and Notion fully opaque (no default transparency).
 o.window("discord", { tag = "-default-opacity", opacity = "1 1" })
-o.window("TradingView", { tag = "-default-opacity", opacity = "1 1" })
+o.window("tradingview", { tag = "-default-opacity", opacity = "1 1" })
 o.window("cursor", { tag = "-default-opacity", opacity = "1 1" })
 o.window("notion", { tag = "-default-opacity", opacity = "1 1" })
