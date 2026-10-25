@@ -19,10 +19,6 @@
           "verticalFormat": "HH\n—\nmm"
         },
         {
-          "id": "pomodoro",
-          "type": "qml"
-        },
-        {
           "id": "omarchy.weather"
         }
       ],
@@ -63,7 +59,7 @@
       ]
     },
     "position": "top",
-    "transparent": true
+    "transparent": false
   },
   "idle": {
     "lock": 300,
