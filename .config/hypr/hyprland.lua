@@ -39,3 +39,9 @@ o.window("discord", { tag = "-default-opacity", opacity = "1 1" })
 o.window("tradingview", { tag = "-default-opacity", opacity = "1 1" })
 o.window("cursor", { tag = "-default-opacity", opacity = "1 1" })
 o.window("notion", { tag = "-default-opacity", opacity = "1 1" })
+
+-- Use the Bibata cursor theme.
+hl.env("XCURSOR_THEME", "Bibata-Modern-Ice")
+hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Ice")
+hl.env("XCURSOR_SIZE", "16")
+hl.env("HYPRCURSOR_SIZE", "16")
