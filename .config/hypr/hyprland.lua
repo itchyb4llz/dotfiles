@@ -40,6 +40,9 @@ o.window("tradingview", { tag = "-default-opacity", opacity = "1 1" })
 o.window("cursor", { tag = "-default-opacity", opacity = "1 1" })
 o.window("notion", { tag = "-default-opacity", opacity = "1 1" })
 
+-- Keep Brave at full opacity and undimmed even when unfocused.
+o.window("brave-browser", { opacity = "1 1", no_dim = true })
+
 -- Use the Bibata cursor theme.
 hl.env("XCURSOR_THEME", "Bibata-Modern-Ice")
 hl.env("HYPRCURSOR_THEME", "Bibata-Modern-Ice")
