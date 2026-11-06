@@ -31,7 +31,6 @@ MANIFEST=(
   "omarchy:dir:.config/hypr"
   "omarchy:dir:.config/omarchy/bar/modules"
   "omarchy:file:.config/omarchy/shell.json"
-  "omarchy:file:.config/uwsm/env.d/50-hyprland-no-rt"
 
   # ---- vanilla: legacy X11 WM setup (i3 / qtile / bspwm) ----
   "vanilla:file:.xinitrc"
