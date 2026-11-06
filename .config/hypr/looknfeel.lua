@@ -1,29 +1,34 @@
 -- Change the default Omarchy look'n'feel.
 
--- https://wiki.hypr.land/Configuring/Basics/Variables/#general
-hl.config({
-  general = {
-    -- No gaps between windows.
-    gaps_in = 0,
-    gaps_out = 0,
-    -- border_size = 0,
+-- Opt another application in to Omarchy's standard transparency.
+-- Find its class with: hyprctl clients
+-- o.transparent_window("my-app")
+-- o.transparent_window("my-app", "0.9 0.85") -- Custom active/inactive opacity.
 
-    -- Change to niri-like side-scrolling layout.
-    -- layout = "scrolling",
-  },
-})
+-- https://wiki.hypr.land/Configuring/Basics/Variables/#general
+-- hl.config({
+--   general = {
+--     -- No gaps between windows or borders.
+--     gaps_in = 0,
+--     gaps_out = 0,
+--     border_size = 0,
+--
+--     -- Change to niri-like side-scrolling layout.
+--     layout = "scrolling",
+--   },
+-- })
 
 -- https://wiki.hypr.land/Configuring/Basics/Variables/#decoration
-hl.config({
-	decoration = {
-		-- Use round window corners (Omarchy default is 0 = square).
-		-- rounding = 8,
-
-		-- Dim unfocused windows (0.0 = no dim, 1.0 = fully dimmed).
-		dim_inactive = false, -- disabled 2026-11-03 to test Hyprland crashes
-		dim_strength = 0.15,
-	},
-})
+-- hl.config({
+--   decoration = {
+--     -- Use round window corners.
+--     rounding = 8,
+--
+--     -- Dim unfocused windows (0.0 = no dim, 1.0 = fully dimmed).
+--     dim_inactive = true,
+--     dim_strength = 0.15,
+--   },
+-- })
 
 -- https://wiki.hypr.land/Configuring/Basics/Variables/#animations
 -- hl.config({
@@ -42,17 +47,9 @@ hl.config({
 -- })
 
 -- https://wiki.hypr.land/Configuring/Layouts/Scrolling-Layout/
-hl.config({
-  scrolling = {
-    -- See only one column per screen instead of two.
-    column_width = 1.0,
-  },
-})
-
--- Workspace 1 starts in scrolling; every other workspace keeps the dwindle default.
-hl.workspace_rule({ workspace = "1", layout = "scrolling" })
-
--- Smart borders: hide the colored border when a tiled window is alone on its
--- workspace (or fullscreen); show it again once there are multiple windows.
-o.window({ float = false, workspace = "w[tv1]" }, { border_size = 0 })
-o.window({ float = false, workspace = "f[1]" }, { border_size = 0 })
+-- hl.config({
+--   scrolling = {
+--     -- See only one column per screen instead of two.
+--     column_width = 0.97,
+--   },
+-- })
