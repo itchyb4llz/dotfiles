@@ -28,12 +28,6 @@ require("default.hypr.toggles")
 -- Add any other personal Hyprland configuration below.
 -- o.window("qemu", { workspace = "5" })
 
--- Pin apps to dedicated workspaces.
-o.window("brave-browser", { workspace = "2" })
-o.window("tradingview", { workspace = "5" })
-o.window("discord", { workspace = "6" })
-o.window("obs", { workspace = "9" })
-
 -- Keep Discord, TradingView, Cursor and Notion fully opaque (no default transparency).
 o.window("discord", { tag = "-default-opacity", opacity = "1 1" })
 o.window("tradingview", { tag = "-default-opacity", opacity = "1 1" })
