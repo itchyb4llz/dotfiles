@@ -53,3 +53,10 @@
 --     column_width = 0.97,
 --   },
 -- })
+
+-- Round window corners (and the borders around them).
+hl.config({
+  decoration = {
+    rounding = 8,
+  },
+})
