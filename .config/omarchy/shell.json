@@ -1,24 +1,42 @@
 {
   "bar": {
-    "centerAnchor": "omarchy.clock",
+    "background": "glassy",
     "layout": {
       "center": [
+        {
+          "format": "ddd d MMM h:mm AP",
+          "formatAlt": "d MMMM 'W'ww yyyy",
+          "id": "omarchy.clock",
+          "verticalFormat": "HH\n—\nmm"
+        }
+      ],
+      "centerBegin": [
         {
           "id": "omarchy.indicators"
         },
         {
-          "id": "omarchy.keyboard-layout"
-        },
-        {
           "id": "omarchy.system-update"
-        },
+        }
+      ],
+      "centerEnd": [
         {
-          "id": "omarchy.clock",
-          "format": "ddd d MMM h:mm AP",
-          "formatAlt": "d MMMM 'W'ww yyyy",
-          "verticalFormat": "HH\n—\nmm"
-        },
-        {
+          "cities": [
+            {
+              "lat": 7.07306,
+              "lon": 125.61278,
+              "name": "Davao City",
+              "region": "Davao Region, PH",
+              "zone": "Asia/Manila"
+            },
+            {
+              "name": "New York",
+              "zone": "America/New_York"
+            },
+            {
+              "name": "London",
+              "zone": "Europe/London"
+            }
+          ],
           "id": "omarchy.elsewhen"
         },
         {
@@ -36,6 +54,9 @@
       "right": [
         {
           "id": "omarchy.tray"
+        },
+        {
+          "id": "omarchy.keyboard-layout"
         },
         {
           "id": "omarchy.tailscale"
@@ -59,10 +80,13 @@
           "id": "omarchy.power",
           "showPercentage": true
         }
-      ]
+      ],
+      "tray": []
     },
-    "position": "top",
-    "transparent": false
+    "position": "top"
+  },
+  "dock": {
+    "autohide": true
   },
   "idle": {
     "lock": 300,
