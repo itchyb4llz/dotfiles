@@ -1,0 +1,4 @@
+# Installed into ~/.local/bin by Herdr; herdr-core updates itself, herdr-app points into ~/.local/share.
+.local/bin/herdr-core
+.local/bin/hc
+.local/bin/herdr-app

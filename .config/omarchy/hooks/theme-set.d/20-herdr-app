@@ -1,0 +1,27 @@
+#!/bin/bash
+# Herdr GUI follows the Omarchy theme. ~/.config/omarchy/themed/herdr-app.json.tpl
+# is rendered on every theme change into the current theme; this publishes it as
+# Herdr's "omarchy" theme and selects it. Herdr reloads themes/*.json live.
+set -u
+
+src="$HOME/.local/state/omarchy/current/theme/herdr-app.json"
+dst="${HERDR_APP_HOME:-$HOME/.config/herdr-app}/themes/omarchy.json"
+
+[[ -f $src ]] || exit 0
+# A theme missing a color leaves its {{ placeholder }}; keep the last good palette.
+if grep -q '{{' "$src"; then
+  echo "herdr-app: $src has unresolved colors, skipping" >&2
+  exit 0
+fi
+# Only follow an install that exists.
+[[ -d $(dirname "$dst") ]] || exit 0
+
+# Atomic, so Herdr never reads a half-written file.
+tmp=$(mktemp "$dst.XXXXXX")
+cp "$src" "$tmp"
+chmod 644 "$tmp"
+mv "$tmp" "$dst"
+
+# Select it (sets the half matching the theme's lightness, so dark and light
+# Omarchy themes both land on it). Fails quietly when Herdr isn't running.
+command -v herdr-app >/dev/null && timeout 5 herdr-app do app.theme --name omarchy >/dev/null 2>&1 || true

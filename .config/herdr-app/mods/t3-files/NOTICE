@@ -1,0 +1,3 @@
+icons/cat/: Catppuccin VSCode Icons (https://github.com/catppuccin/vscode-icons), MIT License, see icons/cat/LICENSE.
+The other icons in icons/ are from Lucide (https://lucide.dev), ISC License, Copyright (c) Lucide Contributors.
+vendor/ufuzzy.js: uFuzzy (https://github.com/leeoniya/uFuzzy), MIT License, see vendor/LICENSE-ufuzzy.
