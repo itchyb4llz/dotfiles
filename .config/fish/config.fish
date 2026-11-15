@@ -79,6 +79,7 @@ alias ls 'eza -l --color=always --group-directories-first --icons=auto'
 alias la 'eza -aG --color=always --group-directories-first --icons=auto'
 alias ll 'eza -al --color=always --group-directories-first --icons=auto'
 alias vim nvim
+alias nw nvim-watch
 # alias vim lvim
 alias em '/usr/bin/emacs -nw'
 # alias rm 'rm -rf'

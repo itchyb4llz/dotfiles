@@ -1,0 +1,16 @@
+#!/bin/bash
+# Open nvim in the current folder as a watcher: every file an agent changes under
+# it (per git status) gets loaded, reloads live as it's written, and the newest
+# write is followed. F5 resyncs, F6 toggles follow. Same view herdr-watch opens
+# in a pane, just run in place. Pass --no-follow to stay on the file you're on.
+set -euo pipefail
+
+git rev-parse --is-inside-work-tree > /dev/null 2>&1 || {
+  echo "nvim-watch: $PWD is not inside a git repo (changes are found via git status)" >&2
+  exit 1
+}
+
+follow=true
+[ "${1:-}" = "--no-follow" ] && follow=false
+
+exec nvim -c "lua require('config.watch').start({ follow = $follow })"
