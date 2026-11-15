@@ -8,7 +8,8 @@ import { run, props, closeOverlay, theme, focused, panes, terminals, spaces, exe
 
 // prefix+f, the GUI's herdr-watch (~/.dotfiles/.local/bin/herdr-watch): toggle an nvim "watch" pane
 // left of the focused one, at the repo's root, showing every file the agents are changing.
-const WATCH_ARGV = ["nvim", "-c", 'lua require("config.watch").start()'];
+// Inside an interactive fish (-C runs it first), so quitting nvim leaves a shell, not a closed pane.
+const WATCH_ARGV = ["fish", "-C", `nvim -c 'lua require("config.watch").start()'`];
 const isWatch = (t) => t?.labels?.["herdr.watch"] === "1" || (Array.isArray(t?.argv) && t.argv.some((a) => String(a).includes("config.watch")));
 const fail = (body) => notify({ title: "herdr-watch", body, level: "error" });
 

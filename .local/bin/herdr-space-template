@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+"""herdr-space-template — give every new Herdr GUI space my default layout.
+
+The layout copies the "pharmasyncv2" space:
+
+    +-----------+----------------------+
+    |           |  nvim watch (71%)    |
+    |  claude   |                      |
+    |  (38%)    +----------------------+
+    |           |  shell (29%)         |
+    +-----------+----------------------+
+
+herdr-app has no "new space template" setting, and the layout I use (main) is
+Herdr's own and read-only, so a mod can't live in it. Instead this follows
+herdr-core's events: when a space appears that is just one tab with one plain
+shell, it splits it with `herdr-app do`, starts claude in the left shell, and
+sets the split sizes in the core's "herdr-app" document (no command sizes panes).
+
+Spaces that existed when this started, or that were made with an agent or more
+than one pane, are left alone. Started by ~/.config/hypr/autostart.lua.
+"""
+
+import json
+import subprocess
+import sys
+import time
+
+# Inside an interactive fish (-C runs it first), so quitting nvim leaves a shell, not a closed pane.
+WATCH_ARGV = ["fish", "-C", """nvim -c 'lua require("config.watch").start()'"""]
+LEFT_CMD = "claude"  # typed into the left shell; "" leaves it a plain shell
+LEFT_WEIGHT = 0.38  # share of the width for the left (claude) pane
+TOP_WEIGHT = 0.71  # share of the right column for the watch pane
+SHELLS = {"fish", "bash", "zsh", "sh", "nu"}
+DOC = "herdr-app"
+
+
+def log(*a):
+    print("herdr-space-template:", *a, file=sys.stderr, flush=True)
+
+
+def rpc(method, params):
+    req = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": params})
+    out = subprocess.run(["hc", "connect"], input=req + "\n", capture_output=True, text=True, timeout=10).stdout
+    for line in out.splitlines():
+        msg = json.loads(line)
+        if msg.get("id") == 1:
+            if "error" in msg:
+                raise RuntimeError(msg["error"].get("message", msg["error"]))
+            return msg["result"]
+    raise RuntimeError(f"no reply to {method}")
+
+
+def doc_get():
+    r = rpc("doc.get", {"name": DOC})
+    return r.get("value") or {"spaces": []}, r.get("version", 0)
+
+
+def app(*args):
+    return subprocess.run(["herdr-app", "do", *args], capture_output=True, text=True, timeout=10)
+
+
+def terminal(address):
+    r = subprocess.run(["hc", "get", address, "--json"], capture_output=True, text=True, timeout=10)
+    try:
+        return json.loads(r.stdout)
+    except json.JSONDecodeError:
+        return {}
+
+
+def tab_root(space_id, doc):
+    for s in doc.get("spaces", []):
+        if s["id"] == space_id and len(s.get("tabs", [])) == 1:
+            return s["tabs"][0]["root"]
+    return None
+
+
+def lone_shell(root):
+    """The (pane, terminal) of a tab that is one plain shell, else None."""
+    kids = root.get("children", [])
+    if len(kids) != 1 or kids[0].get("type") != "block":
+        return None
+    address = kids[0].get("content", {}).get("terminal")
+    if not address:
+        return None
+    t = terminal(address)
+    t = t.get("terminal", t)
+    fg = (t.get("foreground") or {}).get("name") or ""
+    argv0 = (t.get("argv") or [""])[0].rsplit("/", 1)[-1]
+    if fg not in SHELLS and argv0 not in SHELLS:
+        return None
+    return kids[0]["id"], address
+
+
+def wait_for(pred, tries=40):
+    for _ in range(tries):
+        doc, version = doc_get()
+        hit = pred(doc)
+        if hit:
+            return hit, doc, version
+        time.sleep(0.1)
+    return None, None, None
+
+
+def apply(space_id):
+    """True when done with this space (laid out or not ours), False to try again."""
+    doc, _ = doc_get()
+    root = tab_root(space_id, doc)
+    if root is None:
+        return not any(s["id"] == space_id for s in doc.get("spaces", []))  # gone, or several tabs
+    lone = lone_shell(root)
+    if not lone:
+        return not root.get("children") == []  # no pane yet: wait; anything else isn't ours
+    left, address = lone
+    log("laying out", space_id)
+
+    # Split right with the watcher, then split the watcher down for a shell.
+    if app("pane.split", "--direction", "right", "--pane", left, "--argv", json.dumps(WATCH_ARGV)).returncode:
+        log("split right failed"); return True
+    right, _, _ = wait_for(lambda d: (lambda r: r and len(r["children"]) == 2 and r["children"][1]["id"])(tab_root(space_id, d)))
+    if not right:
+        log("watch pane never showed up"); return True
+    if app("pane.split", "--direction", "down", "--pane", right).returncode:
+        log("split down failed"); return True
+
+    def shaped(d):
+        r = tab_root(space_id, d)
+        if r and r.get("type") == "row" and len(r["children"]) == 2:
+            col = r["children"][1]
+            if col.get("type") == "column" and len(col.get("children", [])) == 2:
+                return r
+        return None
+
+    # Size it like pharmasyncv2. The app may write the doc at the same time, so retry.
+    for _ in range(10):
+        r, doc, version = wait_for(shaped)
+        if not r:
+            log("split tree never took shape"); return True
+        r["children"][0]["size"] = {"weight": LEFT_WEIGHT}
+        r["children"][1]["size"] = {"weight": 1 - LEFT_WEIGHT}
+        r["children"][1]["children"][0]["size"] = {"weight": TOP_WEIGHT}
+        r["children"][1]["children"][1]["size"] = {"weight": 1 - TOP_WEIGHT}
+        try:
+            rpc("doc.set", {"name": DOC, "value": doc, "version": version})
+            break
+        except RuntimeError as e:
+            if "conflict" not in str(e):
+                log("doc.set failed:", e); return True
+            time.sleep(0.1)
+
+    app("pane.focus", "--pane", left)
+    if LEFT_CMD:
+        subprocess.run(["hc", "send", address, LEFT_CMD], capture_output=True, timeout=10)
+    return True
+
+
+def space_ids():
+    return {s["id"] for s in doc_get()[0].get("spaces", [])}
+
+
+def main():
+    while True:
+        try:
+            known = space_ids()
+            pending = {}  # new space id -> when first seen; retried until laid out or 10s pass
+            ev = subprocess.Popen(["hc", "events", "--json"], stdout=subprocess.PIPE, text=True)
+            for line in ev.stdout:
+                # New spaces show up as a created terminal and a doc write; ignore the rest.
+                if '"type":"doc"' not in line and '"type":"created"' not in line and not pending:
+                    continue
+                now = space_ids()
+                for sid in now - known:
+                    pending.setdefault(sid, time.time())
+                known |= now
+                for sid, seen in list(pending.items()):
+                    try:
+                        done = apply(sid)
+                    except Exception as e:  # one bad space mustn't stop the watcher
+                        log("failed on", sid, e)
+                        done = True
+                    if done or time.time() - seen > 10:
+                        del pending[sid]
+            ev.wait()
+        except Exception as e:
+            log("restarting after:", e)
+        time.sleep(3)  # core restarting or not up yet
+
+
+if __name__ == "__main__":
+    main()
