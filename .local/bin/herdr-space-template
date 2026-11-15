@@ -3,17 +3,17 @@
 
 The layout copies the "pharmasyncv2" space:
 
-    +-----------+----------------------+
-    |           |  nvim watch (71%)    |
-    |  claude   |                      |
-    |  (38%)    +----------------------+
-    |           |  shell (29%)         |
-    +-----------+----------------------+
+    +----------------------+-----------+
+    |  nvim watch (72%)    |           |
+    |                      |  claude   |
+    +----------------------+  (38%)    |
+    |  shell (28%)         |           |
+    +----------------------+-----------+
 
 herdr-app has no "new space template" setting, and the layout I use (main) is
 Herdr's own and read-only, so a mod can't live in it. Instead this follows
 herdr-core's events: when a space appears that is just one tab with one plain
-shell, it splits it with `herdr-app do`, starts claude in the left shell, and
+shell, it splits it with `herdr-app do`, starts claude in that shell (now on the right), and
 sets the split sizes in the core's "herdr-app" document (no command sizes panes).
 
 Spaces that existed when this started, or that were made with an agent or more
@@ -27,9 +27,9 @@ import time
 
 # Inside an interactive fish (-C runs it first), so quitting nvim leaves a shell, not a closed pane.
 WATCH_ARGV = ["fish", "-C", """nvim -c 'lua require("config.watch").start()'"""]
-LEFT_CMD = "claude"  # typed into the left shell; "" leaves it a plain shell
-LEFT_WEIGHT = 0.38  # share of the width for the left (claude) pane
-TOP_WEIGHT = 0.71  # share of the right column for the watch pane
+AGENT_CMD = "claude"  # typed into the right (original) shell; "" leaves it a plain shell
+AGENT_WEIGHT = 0.38  # share of the width for the right (claude) pane
+TOP_WEIGHT = 0.72  # share of the left column for the watch pane
 SHELLS = {"fish", "bash", "zsh", "sh", "nu"}
 DOC = "herdr-app"
 
@@ -110,16 +110,17 @@ def apply(space_id):
     lone = lone_shell(root)
     if not lone:
         return not root.get("children") == []  # no pane yet: wait; anything else isn't ours
-    left, address = lone
+    agent, address = lone
     log("laying out", space_id)
 
-    # Split right with the watcher, then split the watcher down for a shell.
-    if app("pane.split", "--direction", "right", "--pane", left, "--argv", json.dumps(WATCH_ARGV)).returncode:
+    # pane.split only goes right or down: split right with the watcher, split the
+    # watcher down for a shell, then move that column to the left in the doc.
+    if app("pane.split", "--direction", "right", "--pane", agent, "--argv", json.dumps(WATCH_ARGV)).returncode:
         log("split right failed"); return True
-    right, _, _ = wait_for(lambda d: (lambda r: r and len(r["children"]) == 2 and r["children"][1]["id"])(tab_root(space_id, d)))
-    if not right:
+    watch, _, _ = wait_for(lambda d: (lambda r: r and len(r["children"]) == 2 and r["children"][1]["id"])(tab_root(space_id, d)))
+    if not watch:
         log("watch pane never showed up"); return True
-    if app("pane.split", "--direction", "down", "--pane", right).returncode:
+    if app("pane.split", "--direction", "down", "--pane", watch).returncode:
         log("split down failed"); return True
 
     def shaped(d):
@@ -130,15 +131,16 @@ def apply(space_id):
                 return r
         return None
 
-    # Size it like pharmasyncv2. The app may write the doc at the same time, so retry.
+    # Mirror and size it like pharmasyncv2. The app may write the doc at the same time, so retry.
     for _ in range(10):
         r, doc, version = wait_for(shaped)
         if not r:
             log("split tree never took shape"); return True
-        r["children"][0]["size"] = {"weight": LEFT_WEIGHT}
-        r["children"][1]["size"] = {"weight": 1 - LEFT_WEIGHT}
-        r["children"][1]["children"][0]["size"] = {"weight": TOP_WEIGHT}
-        r["children"][1]["children"][1]["size"] = {"weight": 1 - TOP_WEIGHT}
+        r["children"].reverse()
+        r["children"][0]["size"] = {"weight": 1 - AGENT_WEIGHT}
+        r["children"][1]["size"] = {"weight": AGENT_WEIGHT}
+        r["children"][0]["children"][0]["size"] = {"weight": TOP_WEIGHT}
+        r["children"][0]["children"][1]["size"] = {"weight": 1 - TOP_WEIGHT}
         try:
             rpc("doc.set", {"name": DOC, "value": doc, "version": version})
             break
@@ -147,9 +149,9 @@ def apply(space_id):
                 log("doc.set failed:", e); return True
             time.sleep(0.1)
 
-    app("pane.focus", "--pane", left)
-    if LEFT_CMD:
-        subprocess.run(["hc", "send", address, LEFT_CMD], capture_output=True, timeout=10)
+    app("pane.focus", "--pane", agent)
+    if AGENT_CMD:
+        subprocess.run(["hc", "send", address, AGENT_CMD], capture_output=True, timeout=10)
     return True
 
 
