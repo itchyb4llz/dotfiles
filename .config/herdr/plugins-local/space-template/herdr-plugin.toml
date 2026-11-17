@@ -1,0 +1,12 @@
+# Gives every new herdr (TUI) workspace the same layout herdr-space-template gives
+# herdr-app spaces. Linked, not installed: herdr plugin link ~/.config/herdr/plugins-local/space-template
+id = "jd.space-template"
+name = "space-template"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+platforms = ["linux", "macos"]
+description = "Lay out new workspaces as nvim watch over a shell, with claude on the right."
+
+[[events]]
+on = "workspace.created"
+command = ["bash", "layout.sh"]

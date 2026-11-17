@@ -28,6 +28,9 @@ MANIFEST=(
   # ---- omarchy: current Hyprland/Omarchy setup ----
   "omarchy:dir:.config/foot"
   "omarchy:file:.config/herdr/config.toml"
+  # Local herdr plugin: new workspaces get the pharmasyncv2 layout. Needs a one-time
+  # `herdr plugin link ~/.config/herdr/plugins-local/space-template` after linking.
+  "omarchy:dir:.config/herdr/plugins-local/space-template"
   # herdr-app (the GUI) keeps sockets, telemetry, view state and its own shipped
   # mods/layouts/themes in the same folder, so only the pieces that are mine are
   # linked: keys, settings, the herdr-t3 layout and my mods.
