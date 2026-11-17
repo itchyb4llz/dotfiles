@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """herdr-space-template — give every new Herdr GUI space my default layout.
 
-The layout copies the "pharmasyncv2" space:
+The layout copies the "pharmasyncv2" space, as plain shells in $HOME:
 
     +----------------------+-----------+
-    |  nvim watch (72%)    |           |
-    |                      |  claude   |
+    |  shell (72%)         |           |
+    |                      |  shell    |
     +----------------------+  (38%)    |
     |  shell (28%)         |           |
     +----------------------+-----------+
@@ -13,7 +13,7 @@ The layout copies the "pharmasyncv2" space:
 herdr-app has no "new space template" setting, and the layout I use (main) is
 Herdr's own and read-only, so a mod can't live in it. Instead this follows
 herdr-core's events: when a space appears that is just one tab with one plain
-shell, it splits it with `herdr-app do`, starts claude in that shell (now on the right), and
+shell, it splits it with `herdr-app do`, moves that shell (now on the right) to $HOME, and
 sets the split sizes in the core's "herdr-app" document (no command sizes panes).
 
 Spaces that existed when this started, or that were made with an agent or more
@@ -25,11 +25,11 @@ import subprocess
 import sys
 import time
 
-# Inside an interactive fish (-C runs it first), so quitting nvim leaves a shell, not a closed pane.
-WATCH_ARGV = ["fish", "-C", """nvim -c 'lua require("config.watch").start()'"""]
-AGENT_CMD = "claude"  # typed into the right (original) shell; "" leaves it a plain shell
-AGENT_WEIGHT = 0.38  # share of the width for the right (claude) pane
-TOP_WEIGHT = 0.72  # share of the left column for the watch pane
+# pane.split has no folder argument, so the new shells cd home before becoming fish.
+SHELL_ARGV = ["sh", "-c", 'cd "$HOME" && exec fish']
+HOME_CMD = " cd ~; clear"  # typed into the original shell; the leading space keeps it out of fish history
+AGENT_WEIGHT = 0.38  # share of the width for the right (original) pane
+TOP_WEIGHT = 0.72  # share of the left column for its top pane
 SHELLS = {"fish", "bash", "zsh", "sh", "nu"}
 DOC = "herdr-app"
 
@@ -113,14 +113,14 @@ def apply(space_id):
     agent, address = lone
     log("laying out", space_id)
 
-    # pane.split only goes right or down: split right with the watcher, split the
-    # watcher down for a shell, then move that column to the left in the doc.
-    if app("pane.split", "--direction", "right", "--pane", agent, "--argv", json.dumps(WATCH_ARGV)).returncode:
+    # pane.split only goes right or down: split right, split that new pane down,
+    # then move that column to the left in the doc.
+    if app("pane.split", "--direction", "right", "--pane", agent, "--argv", json.dumps(SHELL_ARGV)).returncode:
         log("split right failed"); return True
-    watch, _, _ = wait_for(lambda d: (lambda r: r and len(r["children"]) == 2 and r["children"][1]["id"])(tab_root(space_id, d)))
-    if not watch:
-        log("watch pane never showed up"); return True
-    if app("pane.split", "--direction", "down", "--pane", watch).returncode:
+    left, _, _ = wait_for(lambda d: (lambda r: r and len(r["children"]) == 2 and r["children"][1]["id"])(tab_root(space_id, d)))
+    if not left:
+        log("new pane never showed up"); return True
+    if app("pane.split", "--direction", "down", "--pane", left, "--argv", json.dumps(SHELL_ARGV)).returncode:
         log("split down failed"); return True
 
     def shaped(d):
@@ -150,8 +150,7 @@ def apply(space_id):
             time.sleep(0.1)
 
     app("pane.focus", "--pane", agent)
-    if AGENT_CMD:
-        subprocess.run(["hc", "send", address, AGENT_CMD], capture_output=True, timeout=10)
+    subprocess.run(["hc", "send", address, HOME_CMD], capture_output=True, timeout=10)
     return True
 
 
